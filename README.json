@@ -1,0 +1,9 @@
+{
+  "name": "boardmesh",
+  "source_of_truth": "Mesh monorepo",
+  "source_sha": "8991833d58325eaf3ee63b68e6c0655bee6b9c28",
+  "standalone_repository": "https://github.com/luis-lobo-ar/boardmesh",
+  "build": "cargo build --locked --release -p boardmesh --bin boardmesh-cli --bin boardmesh-mcp",
+  "test": "cargo test --locked -p mesh-graph -p mesh-id -p boardmesh",
+  "documentation": "opt/boardmesh/docs/README.md"
+}

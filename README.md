@@ -1,0 +1,24 @@
+# Boardmesh
+
+Standalone distribution of boardmesh. Clone and build without downloading other Mesh applications.
+
+```sh
+git clone https://github.com/luis-lobo-ar/boardmesh.git
+cd boardmesh
+cargo build --locked --release -p boardmesh --bin boardmesh-cli --bin boardmesh-mcp
+cargo test --locked -p mesh-graph -p mesh-id -p boardmesh
+```
+
+Linux x86_64 binaries and checksums are available under [Releases](https://github.com/luis-lobo-ar/boardmesh/releases). Extract the archive and add its `bin/` directory to PATH. Snapshot releases are prereleases built from the exact source revision below.
+
+Product source and manuals: [opt/boardmesh](opt/boardmesh/). [Standalone guide](DISTRIBUTION.html). Shared crates under `lib/` are generated from the same Mesh revision and are included only when this product needs them.
+
+Authoritative development: the Mesh monorepo. This repository receives generated snapshots. Open issues here; proposed changes must be integrated into Mesh by its maintainer before the next snapshot. Do not edit the generated shared crates independently.
+
+Source commit: `8991833d58325eaf3ee63b68e6c0655bee6b9c28`. Full file hashes and exporter provenance: [mesh-export.json](mesh-export.json). No private monorepo history, active task records or session data are included.
+
+MIT licensed Mesh code; third-party assets retain the notices in LICENSES.txt and their original licenses.
+
+Desktop build: install GTK3, SDL 1.2, CMake, Clang/libclang, OpenGL and pkg-config development packages; then `RUSTFLAGS='-C link-arg=-lSDL' cargo build --locked --release -p boardmesh --features gui`. MCP: run `target/release/boardmesh-mcp --session default`.
+
+Initial binary limitation: desktop icons use the built-in fallback shapes when the source checkout is absent. The current GUI loads optional Font Awesome PNGs from its compile-time source path. Source builds retain those icons; relocatable asset lookup is future product work.

@@ -1,0 +1,25 @@
+[workspace]
+resolver = "2"
+members = [
+  "lib/mesh-graph",
+  "lib/mesh-id",
+  "opt/boardmesh"
+]
+
+[workspace.package]
+edition = "2024"
+license = "MIT"
+version = "0.1.0"
+
+[workspace.dependencies]
+anyhow = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "2.0"
+fs2 = "0.4"
+toml = "0.8"
+ulid = "1.1"
+
+[patch.crates-io]
+wxdragon = { path = "opt/boardmesh/vendor/wxdragon-0.9.13-local" }
+wxdragon-sys = { path = "opt/boardmesh/vendor/wxdragon-sys-0.9.13-local" }

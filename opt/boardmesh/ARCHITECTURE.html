@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Architecture</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Architecture</h1>
+</header>
+<h1 id="architecture">Architecture</h1>
+<h2 id="intent">Intent</h2>
+<p><code>Boardmesh</code> is no longer just a desktop GUI. It now has
+multiple delivery paths:</p>
+<ul>
+<li>wxWidgets GUI</li>
+<li>MCP server</li>
+<li>WebSocket JSON-RPC runtime</li>
+<li>CLI client</li>
+<li>file-backed scene/session persistence</li>
+</ul>
+<p>That means a pure MVC mental model is too narrow for the whole
+project. MVC still fits inside the GUI, but the overall system is better
+modeled as a <code>hexagonal</code> / <code>clean architecture</code>
+system:</p>
+<ul>
+<li>the center owns board rules and session behavior</li>
+<li>transport and UI layers translate requests into those behaviors</li>
+<li>persistence and framework code stay at the edge</li>
+</ul>
+<h2 id="why-not-global-mvc">Why Not Global MVC</h2>
+<p>MVC works well for a single UI:</p>
+<ul>
+<li><code>Model</code>: state</li>
+<li><code>View</code>: widgets</li>
+<li><code>Controller</code>: event handlers</li>
+</ul>
+<p>It breaks down when the same behavior must be reachable from:</p>
+<ul>
+<li>GUI clicks</li>
+<li>MCP tool calls</li>
+<li>runtime JSON-RPC methods</li>
+<li>CLI commands</li>
+</ul>
+<p>In this project, CLI and MCP are not really "views". They are
+interface adapters that should call the same application behavior.</p>
+<h2 id="current-architecture">Current Architecture</h2>
+<pre class="mermaid"><code>flowchart LR
+    GUI[&quot;GUI binary\nboardmesh.rs&quot;] --&gt; Scene[&quot;Scene + selection rules&quot;]
+    GUI --&gt; Storage[&quot;storage.rs\nsession.rs&quot;]
+    GUI --&gt; RuntimeClient[&quot;runtime_client.rs&quot;]
+
+    MCP[&quot;MCP/Runtime binary\nboardmesh-mcp.rs&quot;] --&gt; Scene
+    MCP --&gt; Storage
+    MCP --&gt; Runtime[&quot;runtime.rs&quot;]
+
+    CLI[&quot;CLI binary\nboardmesh-cli.rs&quot;] --&gt; RuntimeClient
+    RuntimeClient --&gt; MCP
+
+    Storage --&gt; Files[&quot;Scene JSON\nManifest JSON&quot;]</code></pre>
+<h3 id="current-strengths">Current strengths</h3>
+<ul>
+<li>scene and persistence primitives already live in library
+modules</li>
+<li>runtime transport contracts are already shared</li>
+<li>GUI layout state is already extracted into a reusable module</li>
+</ul>
+<h3 id="current-weaknesses">Current weaknesses</h3>
+<ul>
+<li>application behavior is still concentrated in binaries</li>
+<li><code>boardmesh-mcp.rs</code> mixes transport, persistence, session
+logic, and board mutations</li>
+<li><code>boardmesh.rs</code> still mixes GUI view code with application
+behavior</li>
+<li>adding new front doors risks duplicating business rules</li>
+</ul>
+<h2 id="target-architecture">Target Architecture</h2>
+<pre class="mermaid"><code>flowchart LR
+    subgraph Adapters[&quot;Interface Adapters&quot;]
+        GUI[&quot;GUI adapter&quot;]
+        CLI[&quot;CLI adapter&quot;]
+        MCP[&quot;MCP adapter&quot;]
+        WS[&quot;WebSocket JSON-RPC adapter&quot;]
+    end
+
+    subgraph App[&quot;Application Layer&quot;]
+        Service[&quot;BoardmeshService / BoardWorkspace&quot;]
+        UseCases[&quot;Use cases\nadd, delete, fill, select,\nundo, redo, switch session&quot;]
+    end
+
+    subgraph Domain[&quot;Domain&quot;]
+        Scene[&quot;SceneDocument\nobjects, selection, geometry&quot;]
+        History[&quot;History model&quot;]
+        SessionState[&quot;Session state&quot;]
+    end
+
+    subgraph Infra[&quot;Infrastructure&quot;]
+        Storage[&quot;JSON scene + manifest storage&quot;]
+        Render[&quot;PNG rendering&quot;]
+        Wx[&quot;wxWidgets / wxdragon&quot;]
+        RMCP[&quot;rmcp&quot;]
+        WSInfra[&quot;tokio tungstenite&quot;]
+    end
+
+    GUI --&gt; Service
+    CLI --&gt; Service
+    MCP --&gt; Service
+    WS --&gt; Service
+
+    Service --&gt; Scene
+    Service --&gt; History
+    Service --&gt; SessionState
+
+    Service --&gt; Storage
+    GUI --&gt; Wx
+    MCP --&gt; RMCP
+    WS --&gt; WSInfra
+    Service --&gt; Render</code></pre>
+<h2 id="layer-responsibilities">Layer Responsibilities</h2>
+<h3 id="domain">Domain</h3>
+<p>Owns board rules and concepts:</p>
+<ul>
+<li>scene objects</li>
+<li>selection rules</li>
+<li>geometry and hit testing</li>
+<li>history semantics</li>
+<li>session semantics</li>
+</ul>
+<p>This layer should not know about:</p>
+<ul>
+<li>wx widgets</li>
+<li>MCP tools</li>
+<li>WebSocket payloads</li>
+<li>JSON file paths beyond abstract repository needs</li>
+</ul>
+<h3 id="application-layer">Application Layer</h3>
+<p>Owns use cases:</p>
+<ul>
+<li>add an object</li>
+<li>delete an object</li>
+<li>fill an object</li>
+<li>switch sessions</li>
+<li>replace the active scene</li>
+<li>save or load a scene</li>
+</ul>
+<p>This layer coordinates domain logic and persistence. It should be
+reusable from every delivery mechanism.</p>
+<h3 id="interface-adapters">Interface Adapters</h3>
+<p>Translate external requests into application calls:</p>
+<ul>
+<li>GUI event handlers</li>
+<li>CLI command parsing</li>
+<li>MCP tool handlers</li>
+<li>runtime JSON-RPC handlers</li>
+</ul>
+<p>Runtime-specific note:</p>
+<ul>
+<li>websocket session attachment is client-local; one GUI window or CLI
+connection changing sessions must not mutate another client's active
+runtime board</li>
+<li>runtime change notifications should be filtered to the session or
+scene each client attached to</li>
+<li>one-shot runtime calls should carry an explicit
+<code>session_id</code> whenever they need to target a named session
+without a persistent attached websocket</li>
+</ul>
+<p>Adapters should do translation and presentation, not own business
+logic.</p>
+<h3 id="infrastructure">Infrastructure</h3>
+<p>Implements technical details:</p>
+<ul>
+<li>filesystem persistence</li>
+<li>websocket transport</li>
+<li>rmcp server transport</li>
+<li>PNG rendering</li>
+<li>wxWidgets widget rendering</li>
+</ul>
+<h2 id="mvc-inside-the-gui">MVC Inside The GUI</h2>
+<p>The GUI should still use an MVC-like split internally:</p>
+<ul>
+<li><code>Model</code>: GUI state snapshot plus application state
+projections</li>
+<li><code>View</code>: panels, canvas, toolbars, dialogs</li>
+<li><code>Controller</code>: event bindings that translate user actions
+into application commands</li>
+</ul>
+<p>That is a local pattern inside the GUI adapter, not the architecture
+of the entire system.</p>
+<h2 id="refactor-plan">Refactor Plan</h2>
+<h3 id="phase-1-extract-a-shared-application-object">Phase 1: Extract a
+shared application object</h3>
+<p>Create a reusable workspace/service object that owns:</p>
+<ul>
+<li>active session id</li>
+<li>session root</li>
+<li>active scene path</li>
+<li>active scene state</li>
+</ul>
+<p>Move into it:</p>
+<ul>
+<li>scene mutation operations</li>
+<li>file-backed refresh/persist behavior</li>
+<li>session activation and named-session bootstrap behavior</li>
+</ul>
+<p>This reduces the amount of business logic embedded in
+<code>boardmesh-mcp.rs</code>.</p>
+<h3 id="phase-2-make-mcp-and-runtime-pure-adapters">Phase 2: Make MCP
+and runtime pure adapters</h3>
+<p>Move MCP/runtime handlers to:</p>
+<ul>
+<li>decode request</li>
+<li>call shared application service</li>
+<li>map result to transport DTO</li>
+<li>publish runtime notifications</li>
+</ul>
+<p>At this point, MCP no longer owns board business rules.</p>
+<h3
+id="phase-3-move-gui-mutation-behavior-behind-the-same-service">Phase 3:
+Move GUI mutation behavior behind the same service</h3>
+<p>The GUI should stop mutating the scene directly for durable
+operations. Instead it should:</p>
+<ul>
+<li>keep ephemeral draft state locally</li>
+<li>call the shared application service for committed mutations</li>
+<li>update history and selection views from application results</li>
+</ul>
+<h3 id="phase-4-harden-the-ports">Phase 4: Harden the ports</h3>
+<p>Introduce explicit ports for:</p>
+<ul>
+<li>scene repository</li>
+<li>session repository</li>
+<li>event publisher</li>
+</ul>
+<p>That will allow future persistence backends without touching the core
+use cases.</p>
+<h2 id="first-refactor-in-this-round">First Refactor In This Round</h2>
+<p>This round starts <code>Phase 1</code> by extracting a shared
+<code>BoardWorkspace</code> application object into the library and
+moving the MCP/runtime binary to use it.</p>
+<p>That object is intentionally file-backed for now. It is not yet a
+full repository-driven clean architecture implementation, but it creates
+the correct seam:</p>
+<ul>
+<li>binaries become thinner</li>
+<li>core workflow becomes reusable</li>
+<li>future GUI adoption becomes realistic</li>
+</ul>
+</body>
+</html>

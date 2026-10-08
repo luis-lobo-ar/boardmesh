@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Boardmesh</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Boardmesh</h1>
+</header>
+<h1 id="boardmesh">Boardmesh</h1>
+<p><code>Boardmesh</code> ships a local-first board built for human +
+agent collaboration.</p>
+<p>Standalone distribution: <a
+href="https://github.com/luis-lobo-ar/boardmesh">luis-lobo-ar/boardmesh</a>.
+Clone that repository to build only Boardmesh and its required shared
+crates, or download Linux snapshot binaries from its Releases page. This
+directory remains the authoritative source; the standalone repository
+receives generated snapshots. The external export supplies its own root
+Cargo workspace, without creating another workspace inside Mesh.</p>
+<p>It currently ships four executables:</p>
+<ul>
+<li><code>boardmesh</code>: a desktop GUI for drawing and inspecting
+boards</li>
+<li><code>boardmesh-layout-lab</code>: a stripped-down GUI harness for
+testing pane and toolbar layout behavior</li>
+<li><code>boardmesh-mcp</code>: an MCP stdio server so tools like Codex
+can create and edit the same board programmatically</li>
+<li><code>boardmesh-cli</code>: a terminal client for the local runtime
+command surface</li>
+</ul>
+<p>The project is intentionally simple: board documents are JSON,
+sessions are named JSON files plus manifests, and the GUI and MCP server
+both operate on the same storage model. Raw scene-only JSON still loads
+and migrates into the newer universe/canvas document shape at the
+storage layer.</p>
+<p>For ecosystem-wide deployment and filesystem guidance, see <a
+href="../../share/doc/architecture/agent-operating-environment.html">../../share/doc/architecture/agent-operating-environment.html</a>.
+Boardmesh remains local-first; only its non-GUI surfaces are reasonable
+container candidates, and those are still single-authority over the
+files they own. For shared room, work, deployment, and agent references
+around Boardmesh sessions, canvases, and objects, see <a
+href="../../share/doc/architecture/cross-product-contracts.html">../../share/doc/architecture/cross-product-contracts.html</a>.</p>
+<h2 id="why-this-exists">Why This Exists</h2>
+<p>Most whiteboards are optimized for humans only. Most diagram
+generators are optimized for one-shot output. This project sits in the
+middle:</p>
+<ul>
+<li>you can sketch locally</li>
+<li>an MCP client can add or edit shapes</li>
+<li>the GUI live-reloads changes from the MCP side</li>
+<li>sessions make it possible to keep multiple named boards around
+without inventing a heavy backend</li>
+</ul>
+<h2 id="current-ux">Current UX</h2>
+<p>The desktop app now provides:</p>
+<ul>
+<li>a structured sidebar with session, tools, style, and object
+sections</li>
+<li>a real tool palette instead of a single dropdown</li>
+<li>undo / redo / clear actions in the main window</li>
+<li>a status bar with current mode, object counts, and MCP
+connectivity</li>
+<li>a subtle canvas grid so the board feels like a drawing surface
+instead of an empty panel</li>
+<li>a canvas-first default layout, with
+session/objects/inspector/history panels hidden until requested</li>
+<li>one-shot contextual pane surfacing: the inspector opens the first
+time a drawing tool becomes active, and the objects pane opens the first
+time the board gains content</li>
+<li>an infinite-board camera with wheel zoom, middle-drag pan, and
+fit/reset shortcuts</li>
+<li>a local WebSocket runtime bridge so the GUI can subscribe to live
+scene updates from the MCP server</li>
+</ul>
+<h2 id="architecture">Architecture</h2>
+<p>The app is split into four layers:</p>
+<ol type="1">
+<li><p>Desktop GUI <code>src/bin/boardmesh.rs</code> A wxDragon desktop
+app for local editing, selection, and visual feedback.</p></li>
+<li><p>CLI <code>src/bin/boardmesh-cli.rs</code> A terminal-friendly
+client for the runtime command surface. It can invoke scene, session,
+render, and mutation commands without going through MCP.</p></li>
+<li><p>MCP server <code>src/bin/boardmesh-mcp.rs</code> A stdio server
+exposing Boardmesh operations like adding shapes, switching sessions,
+exporting scenes, and rendering PNGs.</p></li>
+<li><p>Shared core and runtime <code>src/lib.rs</code>,
+<code>src/scene.rs</code>, <code>src/storage.rs</code>,
+<code>src/session.rs</code>, <code>src/render.rs</code>,
+<code>src/runtime.rs</code>, <code>src/runtime_client.rs</code> The
+scene model, JSON storage, session manifests, runtime method catalog,
+and websocket client helpers used by the GUI, CLI, and MCP
+server.</p></li>
+</ol>
+<p>There is no database and no web backend. The source of truth is the
+scene/session files on disk. The live coordination path between the GUI
+and <code>boardmesh-mcp</code> now uses a local WebSocket runtime
+(<code>ws://127.0.0.1:9467</code> by default) with JSON-RPC messages.
+Files remain the persistence layer.</p>
+<h2 id="session-first-workflow">Session-First Workflow</h2>
+<p>The preferred workflow is named sessions.</p>
+<p>Each session has:</p>
+<ul>
+<li><code>boardmesh-sessions/&lt;session_id&gt;.json</code></li>
+<li><code>boardmesh-sessions/&lt;session_id&gt;.manifest.json</code></li>
+</ul>
+<p>The scene file stores objects. The manifest stores metadata such as
+attached GUI windows and MCP server heartbeats.</p>
+<p>By default, the installed setup uses the named session:</p>
+<p><code>default</code></p>
+<p>Raw scene-file mode still exists for compatibility, but sessions are
+the primary model.</p>
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="build">Build</h3>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> build <span class="at">--bin</span> boardmesh-cli</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> build <span class="at">--bin</span> boardmesh-mcp</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> build <span class="at">--bin</span> boardmesh <span class="at">--features</span> gui</span></code></pre></div>
+<h2 id="ci-and-release-artifacts">CI And Release Artifacts</h2>
+<p>Boardmesh has a product-specific GitHub Actions workflow at
+<code>.github/workflows/boardmesh-build.yml</code>.</p>
+<p>The workflow:</p>
+<ul>
+<li>runs Boardmesh package tests through the reusable monorepo Rust
+product workflow</li>
+<li>builds the non-GUI wrappers <code>boardmesh-cli</code> and
+<code>boardmesh-mcp</code></li>
+<li>builds the GUI binaries <code>boardmesh</code> and
+<code>boardmesh-layout-lab</code> with the <code>gui</code> feature</li>
+<li>uploads a release-friendly <code>boardmesh-linux-x86_64</code>
+artifact package containing the current Boardmesh binary names</li>
+</ul>
+<p>The workflow does not publish releases, deploy Boardmesh, or depend
+on removed legacy compatibility paths.</p>
+<h3 id="run-the-gui">Run the GUI</h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh <span class="at">--features</span> gui <span class="at">--</span> <span class="at">--session</span> default</span></code></pre></div>
+<p>If you omit <code>--session</code> and do not force a raw scene file,
+the app opens a session picker.</p>
+<p>Useful flags:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh <span class="at">--features</span> gui <span class="at">--</span> <span class="at">--session</span> default <span class="at">--runtime-url</span> ws://127.0.0.1:9467</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh <span class="at">--features</span> gui <span class="at">--</span> <span class="at">--session</span> default <span class="at">--no-runtime</span></span></code></pre></div>
+<h3 id="run-the-layout-lab">Run the layout lab</h3>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-layout-lab <span class="at">--features</span> gui</span></code></pre></div>
+<p>Use this when you want to test menu-driven show/hide, toolbar
+docking, and layout state synchronization without involving scene files,
+drawing tools, or MCP traffic.</p>
+<h3 id="run-the-mcp-server">Run the MCP server</h3>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-mcp <span class="at">--</span> <span class="at">--session</span> default</span></code></pre></div>
+<p>By default, the MCP server also starts the local runtime WebSocket
+bridge on <code>127.0.0.1:9467</code>.</p>
+<p>Useful flags:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-mcp <span class="at">--</span> <span class="at">--session</span> default <span class="at">--runtime-addr</span> 127.0.0.1:9467</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-mcp <span class="at">--</span> <span class="at">--session</span> default <span class="at">--no-runtime-ws</span></span></code></pre></div>
+<h3 id="run-the-cli">Run the CLI</h3>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-cli <span class="at">--</span> list-methods</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-cli <span class="at">--</span> get_scene</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-cli <span class="at">--</span> add_text <span class="at">--json</span> <span class="st">&#39;{&quot;position&quot;:&quot;120,120&quot;,&quot;text&quot;:&quot;hello&quot;}&#39;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-cli <span class="at">--</span> add_text <span class="at">--json</span> <span class="st">&#39;{&quot;session_id&quot;:&quot;default&quot;,&quot;position&quot;:&quot;120,120&quot;,&quot;text&quot;:&quot;hello&quot;}&#39;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-cli <span class="at">--</span> session.list</span></code></pre></div>
+<p>The CLI talks to the local runtime websocket rather than to MCP
+stdio. It supports the full runtime method list, which includes:</p>
+<ul>
+<li>runtime-native methods like <code>session.attach</code>,
+<code>session.list</code>, <code>session.switch</code>,
+<code>scene.get</code>, and <code>scene.replace</code></li>
+<li>the Boardmesh command surface mirrored from MCP, such as
+<code>get_universe</code>, <code>get_selection_context</code>,
+<code>create_canvas</code>, <code>set_active_canvas</code>,
+<code>select_canvases</code>, <code>assign_object_to_canvas</code>,
+<code>clear_object_canvas_assignment</code>, <code>add_line</code>,
+<code>add_text</code>, <code>duplicate_object</code>,
+<code>set_object_visibility</code>, <code>set_object_locked</code>,
+<code>move_object_to_front</code>, <code>render_scene_png</code>,
+<code>switch_session</code>, <code>save_scene_as</code>, and
+<code>get_tool_help</code></li>
+</ul>
+<p>Runtime session scope is per websocket client. For one-shot CLI
+calls, pass <code>"session_id"</code> in the JSON payload when the
+method should target a specific named session; long-lived clients can
+also use <code>session.attach</code> or <code>session.switch</code> on
+their own connection before sending follow-up scene updates.</p>
+<p>Useful flags:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-cli <span class="at">--</span> get_scene <span class="at">--compact</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-cli <span class="at">--</span> add_circle <span class="at">--json-file</span> ./circle.json</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-cli <span class="at">--</span> scene.replace <span class="at">--json</span> <span class="st">&#39;{&quot;session_id&quot;:&quot;default&quot;,&quot;scene&quot;:{&quot;objects&quot;:[],&quot;selected_object_ids&quot;:[]}}&#39;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-cli <span class="at">--</span> session.list <span class="at">--runtime-url</span> ws://127.0.0.1:9467</span></code></pre></div>
+<h2 id="desktop-usage">Desktop Usage</h2>
+<p>Supported tools:</p>
+<ul>
+<li>Select</li>
+<li>Pen</li>
+<li>Line</li>
+<li>Rectangle</li>
+<li>Circle</li>
+<li>Triangle</li>
+<li>Polygon</li>
+<li>Fill</li>
+</ul>
+<p>Useful shortcuts:</p>
+<ul>
+<li><code>Delete</code> / <code>Backspace</code>: delete selected
+objects</li>
+<li><code>Ctrl+Z</code>: undo</li>
+<li><code>Ctrl+Shift+Z</code> or <code>Ctrl+Y</code>: redo</li>
+<li>Mouse wheel: zoom around the cursor</li>
+<li>Middle drag: pan the board</li>
+<li><code>Ctrl+0</code>: reset the camera</li>
+<li><code>Ctrl+1</code>: fit the board content</li>
+<li><code>Ctrl+2</code>: fit the current selection</li>
+<li><code>Enter</code>: finish polygon / 3-point triangle</li>
+<li><code>Esc</code>: cancel the active draft</li>
+</ul>
+<p>Behavior notes:</p>
+<ul>
+<li>the object list reflects current objects in the scene file</li>
+<li>checking items selects them in the scene</li>
+<li>Ctrl-click on the canvas toggles object selection</li>
+<li>the GUI polls the scene file and reloads changes written by MCP</li>
+</ul>
+<h2 id="scene-modes">Scene Modes</h2>
+<h3 id="named-session-mode">Named session mode</h3>
+<p>Recommended.</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh <span class="at">--features</span> gui <span class="at">--</span> <span class="at">--session</span> review-board</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-mcp <span class="at">--</span> <span class="at">--session</span> review-board</span></code></pre></div>
+<h3 id="raw-scene-file-mode">Raw scene-file mode</h3>
+<p>Compatibility path for direct file workflows.</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh <span class="at">--features</span> gui <span class="at">--</span> <span class="at">--scene</span> ./boardmesh-scene.json</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-mcp <span class="at">--</span> <span class="at">--scene</span> ./boardmesh-scene.json</span></code></pre></div>
+<h2 id="mcp-usage">MCP Usage</h2>
+<p>The MCP server exposes tools for:</p>
+<ul>
+<li>session management</li>
+<li>scene import/export</li>
+<li>drawing primitives</li>
+<li>selection, semantic selection context, and deletion</li>
+<li>PNG rendering</li>
+</ul>
+<p>Common workflow:</p>
+<ol type="1">
+<li><code>list_sessions</code></li>
+<li><code>create_session</code> or <code>switch_session</code></li>
+<li>inspect the active selection with <code>get_selection_context</code>
+when an agent needs to resolve "this" into object kind, canvas
+membership, connected objects, and nearby context</li>
+<li>draw with <code>add_rectangle</code>, <code>add_text</code>,
+<code>add_line</code>, etc.</li>
+<li>export with <code>render_scene_png</code> or
+<code>export_scene_json</code></li>
+</ol>
+<p>If an agent needs exact payload examples, use
+<code>get_tool_help</code> or <code>get_api_docs</code>.</p>
+<h2 id="install-in-codex">Install In Codex</h2>
+<p>Fast path:</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./install.sh</span></span></code></pre></div>
+<p>What <code>install.sh</code> does:</p>
+<ul>
+<li>builds the release desktop and MCP binaries</li>
+<li>installs them under <code>~/.local/share/boardmesh</code></li>
+<li>creates the target scene file on first install if it does not exist
+yet</li>
+<li>registers the MCP server in Codex</li>
+<li>optionally stops installed GUI/MCP processes before replacing
+binaries and relaunches previously running installed GUI windows</li>
+</ul>
+<p>Important flags:</p>
+<ul>
+<li><code>--session ID</code>: install against a named session</li>
+<li><code>--scene PATH</code>: force raw scene mode</li>
+<li><code>--no-stop</code>: leave existing processes running</li>
+<li><code>--no-restart-gui</code>: do not relaunch GUI windows after
+install</li>
+<li><code>--no-codex</code>: skip Codex registration</li>
+</ul>
+<p>Manual Codex registration example:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">codex</span> mcp add boardmesh <span class="at">--</span> <span class="dt">\</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  /home/luis/dev/luislobo/mesh/target/release/boardmesh-mcp <span class="dt">\</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--session</span> default</span></code></pre></div>
+<h2 id="development">Development</h2>
+<p>Product planning docs:</p>
+<ul>
+<li><code>docs/PRD-001-infinite-universe-and-graph-canvases.html</code></li>
+</ul>
+<h3 id="format">Format</h3>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> fmt</span></code></pre></div>
+<h3 id="tests">Tests</h3>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> test</span></code></pre></div>
+<h3 id="gui-smoke-test">GUI smoke test</h3>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> scripts/smoke_gui.py <span class="at">--scenario</span> draw</span></code></pre></div>
+<p>The smoke script builds the GUI, launches it under a virtual display,
+performs scripted interactions, and writes a screenshot artifact.</p>
+<h3 id="layout-lab">Layout lab</h3>
+<p>The layout lab exists specifically for AUI and menu/toolbar
+debugging.</p>
+<p>It keeps only:</p>
+<ul>
+<li>the menu bar and dock-position commands</li>
+<li>three toolbars</li>
+<li>three side panes</li>
+<li>a center placeholder panel</li>
+<li>a bottom event log</li>
+</ul>
+<p>That makes it the safest place to reproduce docking and visibility
+bugs before changing the main Boardmesh window.</p>
+<h2 id="repository-layout">Repository Layout</h2>
+<pre class="text"><code>src/bin/boardmesh.rs        Desktop GUI entrypoint for `boardmesh`
+src/bin/boardmesh-layout-lab.rs Layout test harness entrypoint for `boardmesh-layout-lab`
+src/bin/boardmesh-mcp.rs    MCP server entrypoint for `boardmesh-mcp`
+src/gui_layout.rs            Shared layout state and actions
+src/scene.rs                 Scene model and object logic
+src/storage.rs               Scene/session storage helpers
+src/session.rs               Session manifests and runtime tracking
+src/render.rs                PNG rendering
+scripts/smoke_gui.py         GUI smoke test
+boardmesh-sessions/          Named session files
+boardmesh-scene.json         Default raw-scene file</code></pre>
+<h2 id="compatibility-notes">Compatibility Notes</h2>
+<ul>
+<li>Sessions are the preferred model.</li>
+<li>Raw scene files remain supported for compatibility.</li>
+<li>Existing MCP clients holding an old stdio process may need to be
+restarted after installing a new binary.</li>
+<li>Use <code>boardmesh</code>, <code>boardmesh-layout-lab</code>,
+<code>boardmesh-mcp</code>, and <code>boardmesh-cli</code>.</li>
+<li><code>cargo test -p boardmesh</code> exercises the shared crate and
+its wrapper binaries.</li>
+</ul>
+<h2 id="version">Version</h2>
+<p>Current package version: <code>0.2.0</code></p>
+</body>
+</html>

@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Prd 001 Infinite Universe And Graph Canvases</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Prd 001 Infinite Universe And Graph Canvases</h1>
+</header>
+<h1 id="prd-001-infinite-universe-and-graph-canvases">PRD-001: Infinite
+Universe and Graph Canvases</h1>
+<h2 id="summary">Summary</h2>
+<p>Boardmesh should evolve from a paint-like local whiteboard into an
+infinite spatial workspace that supports both freeform drawing and
+graph-aware structured diagrams.</p>
+<p>The product model becomes:</p>
+<ul>
+<li>one infinite <code>Universe</code></li>
+<li>multiple named bounded <code>Canvases</code> inside that
+universe</li>
+<li>freeform objects that may live globally or belong to a canvas</li>
+<li>graph-aware nodes and connectors that can bind to object anchors and
+follow moved shapes</li>
+<li>a renderer architecture that works without GPU acceleration by
+default and can optionally use GL when available</li>
+</ul>
+<p>The product should preserve the loose, sketch-first feel that makes
+Excalidraw compelling, while adding stronger structural semantics that
+Excalidraw does not emphasize.</p>
+<h2 id="problem">Problem</h2>
+<p>The current Boardmesh scene model is strong enough for:</p>
+<ul>
+<li>drawing freeform shapes</li>
+<li>simple session persistence</li>
+<li>GUI + MCP collaboration</li>
+</ul>
+<p>It is not yet strong enough for:</p>
+<ul>
+<li>infinite pan/zoom world navigation</li>
+<li>named canvases inside one larger universe</li>
+<li>object-bound connectors that follow moved shapes</li>
+<li>graph-aware routing and splines</li>
+<li>independent export and save behavior for canvases inside a larger
+world</li>
+<li>a cleaner default workspace that prioritizes the board over every
+secondary panel</li>
+</ul>
+<h2 id="vision">Vision</h2>
+<p>Boardmesh should feel like:</p>
+<ul>
+<li>a sketchbook when you need speed</li>
+<li>a diagram tool when you need structure</li>
+<li>a shared visual workspace for humans and agents</li>
+</ul>
+<p>The user should be able to:</p>
+<ul>
+<li>pan and zoom across an effectively unbounded universe</li>
+<li>define named canvases inside that universe</li>
+<li>keep loose sketches outside canvases when useful</li>
+<li>build graph-like diagrams inside canvases with connectors that stay
+attached</li>
+<li>export one canvas or the whole universe</li>
+<li>switch between a minimal focused view and richer secondary panels
+only when needed</li>
+</ul>
+<h2 id="product-principles">Product Principles</h2>
+<ol type="1">
+<li><p>Freeform first Structured graph features must not make casual
+sketching feel heavy.</p></li>
+<li><p>World coordinates are the source of truth Camera state changes
+how the universe is viewed, not how objects are stored.</p></li>
+<li><p>Graph semantics are additive Paint objects and graph objects must
+coexist in the same universe.</p></li>
+<li><p>Testable geometry Routing, anchors, hit testing, viewport
+transforms, and bounds should live in pure Rust model code with unit
+tests.</p></li>
+<li><p>Backend-agnostic rendering Rendering should work without GL and
+optionally accelerate when GL is available.</p></li>
+<li><p>Context before clutter Secondary panels should not dominate the
+first-open experience.</p></li>
+<li><p>Human and agent parity where practical New universe, canvas,
+selection, connector, and object-management capabilities should be
+available through the GUI and exposed programmatically through MCP and
+the runtime CLI wherever the underlying action is meaningful without
+direct pointer gestures.</p></li>
+</ol>
+<h2 id="core-concepts">Core Concepts</h2>
+<h3 id="universe">Universe</h3>
+<p>The universe is the full infinite world document.</p>
+<p>It owns:</p>
+<ul>
+<li>canvases</li>
+<li>drawable objects</li>
+<li>graph nodes and connectors</li>
+<li>selections</li>
+<li>optional viewport presets</li>
+</ul>
+<p>The universe can be saved and exported as a whole.</p>
+<h3 id="canvas">Canvas</h3>
+<p>A canvas is a named bounded region inside the universe.</p>
+<p>A canvas has:</p>
+<ul>
+<li><code>canvas_id</code></li>
+<li><code>name</code></li>
+<li><code>rect</code></li>
+<li>visibility state</li>
+<li>lock state</li>
+<li>tags or metadata</li>
+</ul>
+<p>A canvas can be:</p>
+<ul>
+<li>moved</li>
+<li>renamed</li>
+<li>shown or hidden</li>
+<li>exported independently</li>
+<li>used as the active structured workspace</li>
+</ul>
+<p>Objects may belong to a canvas or remain outside canvases in the
+universe.</p>
+<h3 id="viewport">Viewport</h3>
+<p>Viewport state defines how the user sees the universe.</p>
+<p>It includes:</p>
+<ul>
+<li>pan offset</li>
+<li>zoom factor</li>
+<li>optional fit or focus presets</li>
+</ul>
+<p>Coordinate spaces:</p>
+<ul>
+<li>world space</li>
+<li>view space</li>
+<li>screen space</li>
+</ul>
+<p>All objects live in world space. Rendering and hit testing transform
+through the viewport.</p>
+<h3 id="selection-context">Selection Context</h3>
+<p>Selection must resolve to more than raw selected ids.</p>
+<p>Boardmesh needs a first-class selection-context model so humans and
+agents can ask about "this" or "these" and get:</p>
+<ul>
+<li>primary selected object</li>
+<li>selected set</li>
+<li>object kind and semantic kind</li>
+<li>canvas membership</li>
+<li>connected objects</li>
+<li>nearby objects</li>
+<li>active canvas and selected canvases</li>
+</ul>
+<p>This context must be derivable from pure model state and exposed
+through programmatic surfaces such as MCP and the runtime CLI.</p>
+<h3 id="graph-layer">Graph Layer</h3>
+<p>The graph layer is a mathematical model for:</p>
+<ul>
+<li>nodes</li>
+<li>anchors</li>
+<li>ports</li>
+<li>connectors</li>
+<li>routing</li>
+<li>spline geometry</li>
+<li>hit areas</li>
+</ul>
+<p>It should be pure model code and renderer-independent.</p>
+<h3 id="connector">Connector</h3>
+<p>A connector is not just a painted line. It is a relation between
+endpoints.</p>
+<p>Endpoint modes:</p>
+<ul>
+<li>free point</li>
+<li>bound to an object anchor</li>
+</ul>
+<p>Connector kinds:</p>
+<ul>
+<li>straight</li>
+<li>orthogonal</li>
+<li>spline</li>
+</ul>
+<p>The connector path is resolved from current bindings, so it follows
+moved or resized objects.</p>
+<h2 id="architecture">Architecture</h2>
+<h3 id="1-graph-core">1. Graph Core</h3>
+<p>Create a mathematical graph layer that contains:</p>
+<ul>
+<li>geometry primitives</li>
+<li>anchors and ports</li>
+<li>endpoint bindings</li>
+<li>routed connector output</li>
+<li>straight, orthogonal, and spline routing helpers</li>
+<li>hit testing for connector geometry</li>
+</ul>
+<p>This layer should have no GUI dependency and no GL dependency.</p>
+<p>Recommended direction:</p>
+<ul>
+<li>shared crate or isolated Boardmesh core module first</li>
+<li>deterministic unit tests for routing and geometry</li>
+</ul>
+<h3 id="2-scene-adapter">2. Scene Adapter</h3>
+<p>Boardmesh keeps a scene/domain layer that combines:</p>
+<ul>
+<li>existing drawable objects</li>
+<li>canvas membership</li>
+<li>graph bindings</li>
+<li>universe metadata</li>
+</ul>
+<p>This layer adapts graph-core results into scene objects that the
+renderer can draw.</p>
+<h3 id="3-renderer-interface">3. Renderer Interface</h3>
+<p>Define a renderer interface that supports:</p>
+<ul>
+<li>lines</li>
+<li>polylines</li>
+<li>splines</li>
+<li>polygons</li>
+<li>circles</li>
+<li>text</li>
+<li>selection/highlight overlays</li>
+<li>canvas frames</li>
+<li>grid and viewport-aware decorations</li>
+</ul>
+<p>Backends:</p>
+<ul>
+<li>software renderer as the reference path</li>
+<li>optional GL renderer when available</li>
+</ul>
+<p>GL should be an optimization backend, not the base abstraction.</p>
+<h3 id="4-interaction-layer">4. Interaction Layer</h3>
+<p>The GUI drives:</p>
+<ul>
+<li>pan/zoom</li>
+<li>selection</li>
+<li>canvas focus</li>
+<li>connector creation</li>
+<li>endpoint rebinding</li>
+<li>panel visibility</li>
+</ul>
+<p>The GUI should not own the geometric truth of connectors or viewport
+math.</p>
+<h2 id="data-model-direction">Data Model Direction</h2>
+<h3 id="universe-1">Universe</h3>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> UniverseDocument <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    version<span class="op">:</span> <span class="dt">u32</span><span class="op">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    background<span class="op">:</span> SceneColor<span class="op">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    canvases<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>CanvasFrame<span class="op">&gt;,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    objects<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>DrawableObject<span class="op">&gt;,</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    selected_object_ids<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">String</span><span class="op">&gt;,</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    viewport_presets<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>ViewportPreset<span class="op">&gt;,</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="canvas-1">Canvas</h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> CanvasFrame <span class="op">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    id<span class="op">:</span> <span class="dt">String</span><span class="op">,</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    name<span class="op">:</span> <span class="dt">String</span><span class="op">,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    rect<span class="op">:</span> SceneRect<span class="op">,</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    visible<span class="op">:</span> <span class="dt">bool</span><span class="op">,</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    locked<span class="op">:</span> <span class="dt">bool</span><span class="op">,</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    exportable<span class="op">:</span> <span class="dt">bool</span><span class="op">,</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="viewport-1">Viewport</h3>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> Viewport <span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    pan_x<span class="op">:</span> <span class="dt">f32</span><span class="op">,</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    pan_y<span class="op">:</span> <span class="dt">f32</span><span class="op">,</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    zoom<span class="op">:</span> <span class="dt">f32</span><span class="op">,</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="connector-1">Connector</h3>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">enum</span> Endpoint <span class="op">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    Free(CanvasPoint)<span class="op">,</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    Bound <span class="op">{</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        object_id<span class="op">:</span> <span class="dt">String</span><span class="op">,</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        anchor<span class="op">:</span> AnchorKind<span class="op">,</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        offset<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span>CanvasPoint<span class="op">&gt;,</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">},</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="kw">enum</span> ConnectorKind <span class="op">{</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    Straight<span class="op">,</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    Orthogonal<span class="op">,</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    Spline<span class="op">,</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> ConnectorObject <span class="op">{</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    start<span class="op">:</span> Endpoint<span class="op">,</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    end<span class="op">:</span> Endpoint<span class="op">,</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    kind<span class="op">:</span> ConnectorKind<span class="op">,</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    control_points<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>CanvasPoint<span class="op">&gt;,</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    label<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span>TextObject<span class="op">&gt;,</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h2 id="interaction-model">Interaction Model</h2>
+<h3 id="infinite-universe">Infinite Universe</h3>
+<p>Boardmesh should support:</p>
+<ul>
+<li>wheel zoom centered on cursor</li>
+<li>space-drag or middle-mouse pan</li>
+<li>fit to content</li>
+<li>zoom to selection</li>
+<li>reset view</li>
+<li>optional minimap later</li>
+</ul>
+<h3 id="canvases">Canvases</h3>
+<p>Boardmesh should support:</p>
+<ul>
+<li>create named canvas</li>
+<li>move canvas frame</li>
+<li>show or hide canvas outlines</li>
+<li>set active canvas</li>
+<li>create objects into active canvas by default</li>
+<li>optionally move member objects when moving a canvas</li>
+</ul>
+<h3 id="connectors">Connectors</h3>
+<p>Phase progression:</p>
+<ol type="1">
+<li>straight bound connectors</li>
+<li>orthogonal connectors</li>
+<li>spline connectors</li>
+<li>richer anchors and editing affordances</li>
+</ol>
+<h3 id="selection-tools">Selection Tools</h3>
+<p>Selection should become a first-class interaction system rather than
+a thin side effect of clicking objects.</p>
+<p>Boardmesh should support:</p>
+<ul>
+<li>single select</li>
+<li>additive multi-select</li>
+<li>box select</li>
+<li>lasso select later</li>
+<li>select within active canvas</li>
+<li>select connected graph neighborhood later</li>
+<li>select by object kind or canvas later</li>
+<li>keyboard-driven selection management</li>
+</ul>
+<p>Selection should understand:</p>
+<ul>
+<li>freeform drawables</li>
+<li>graph-aware objects</li>
+<li>canvas frames</li>
+<li>connectors and their endpoints</li>
+</ul>
+<p>Current implementation seam:</p>
+<ul>
+<li>object selection is explicit scene state, with single-select,
+toggle/additive selection, and box-select helpers in model code</li>
+<li>canvas selection is explicit universe state, with toggle and
+box-select helpers over canvas frames</li>
+<li>richer lasso, neighborhood, and semantic selection builds on top of
+that state instead of replacing it</li>
+</ul>
+<p>Selection state should support follow-on actions cleanly, including
+movement, grouping, canvas assignment, deletion, export, and z-order
+changes.</p>
+<h3 id="selection-context-for-agent-interaction">Selection Context for
+Agent Interaction</h3>
+<p>Boardmesh should treat selection as semantic context, not just UI
+highlight state.</p>
+<p>When a human points at something and asks an agent about "this" or
+"these", the agent-facing system should be able to resolve:</p>
+<ul>
+<li>the primary selected object</li>
+<li>the full selected set</li>
+<li>the semantic type of the selection</li>
+<li>the canvas and universe context</li>
+<li>nearby and connected objects</li>
+<li>parent grouping or canvas membership</li>
+<li>linked WorkMesh or Guildmesh references where present</li>
+<li>a human-readable selection summary</li>
+</ul>
+<p>This should lead to a first-class selection-context model, not only
+raw selected ids.</p>
+<p>Directionally:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> SelectionSnapshot <span class="op">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    primary_selection_id<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span><span class="dt">String</span><span class="op">&gt;,</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    selected_ids<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">String</span><span class="op">&gt;,</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    selection_kind<span class="op">:</span> SelectionKind<span class="op">,</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    active_canvas_id<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span><span class="dt">String</span><span class="op">&gt;,</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    focus_bounds<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span>SceneRect<span class="op">&gt;,</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> ObjectContext <span class="op">{</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    object_id<span class="op">:</span> <span class="dt">String</span><span class="op">,</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    object_kind<span class="op">:</span> <span class="dt">String</span><span class="op">,</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    semantic_kind<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span><span class="dt">String</span><span class="op">&gt;,</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    canvas_id<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span><span class="dt">String</span><span class="op">&gt;,</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    group_id<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span><span class="dt">String</span><span class="op">&gt;,</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    linked_objects<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">String</span><span class="op">&gt;,</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    nearby_objects<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">String</span><span class="op">&gt;,</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    attributes<span class="op">:</span> <span class="pp">serde_json::</span>Value<span class="op">,</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> SelectionContext <span class="op">{</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    snapshot<span class="op">:</span> SelectionSnapshot<span class="op">,</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    primary<span class="op">:</span> <span class="dt">Option</span><span class="op">&lt;</span>ObjectContext<span class="op">&gt;,</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    selected<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>ObjectContext<span class="op">&gt;,</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    surroundings<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span>ObjectContext<span class="op">&gt;,</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>This context should be available to:</p>
+<ul>
+<li>the GUI</li>
+<li>MCP</li>
+<li>runtime websocket methods</li>
+<li>the runtime CLI</li>
+</ul>
+<h3 id="object-management-tools">Object Management Tools</h3>
+<p>Boardmesh needs stronger object management than a paint-style
+whiteboard.</p>
+<p>Object management should support:</p>
+<ul>
+<li>duplicate</li>
+<li>rename where meaningful</li>
+<li>lock and unlock</li>
+<li>hide and show</li>
+<li>delete</li>
+<li>clear selection</li>
+<li>select all</li>
+<li>group and ungroup later</li>
+<li>bring forward / send backward / bring to front / send to back</li>
+<li>assign to canvas / move between canvases</li>
+<li>align and distribute later</li>
+<li>inspect object metadata and relationships</li>
+</ul>
+<p>The object-management layer should work across:</p>
+<ul>
+<li>loose freeform shapes</li>
+<li>text</li>
+<li>graph nodes</li>
+<li>connectors</li>
+<li>canvas-scoped objects</li>
+</ul>
+<p>Current implementation seam:</p>
+<ul>
+<li>object visibility and lock state now live on
+<code>DrawableObject</code> in the scene model</li>
+<li>model-facing operations currently cover duplicate, hide/show,
+lock/unlock, and z-order changes in <code>SceneDocument</code></li>
+<li>explicit canvas assignment and assignment clearing live in
+<code>UniverseDocument</code></li>
+<li>the workspace layer exposes the scene-backed management actions for
+persistence and runtime notification reuse</li>
+<li>grouping, alignment, rename flows, and MCP/CLI parity remain later
+slices</li>
+</ul>
+<h3 id="panels">Panels</h3>
+<p>The default layout should emphasize:</p>
+<ul>
+<li>canvas</li>
+<li>primary tool controls</li>
+</ul>
+<p>Panels that should not dominate first open:</p>
+<ul>
+<li>history</li>
+<li>objects list</li>
+<li>full session panel</li>
+</ul>
+<p>The inspector should remain available, but secondary panes should be
+hidden or reduced by default until the user asks for them.</p>
+<h2 id="save-and-export-model">Save and Export Model</h2>
+<p>Boardmesh should support:</p>
+<ul>
+<li>save full universe document</li>
+<li>export full universe snapshot</li>
+<li>export one named canvas</li>
+<li>export current viewport</li>
+<li>later: save reusable canvas templates</li>
+</ul>
+<p>Canvas export should preserve the selected canvas bounds without
+requiring the universe to be split into separate files.</p>
+<p>Current persistence contract:</p>
+<ul>
+<li>Board documents remain JSON files.</li>
+<li>The modern persisted shape is <code>UniverseDocument</code>.</li>
+<li>Legacy scene-only JSON remains loadable and is migrated in memory
+through <code>UniverseDocument::from_scene</code>.</li>
+<li>Canvas-scoped export derives a filtered <code>SceneDocument</code>
+from the universe instead of inventing a second unrelated persisted
+product format.</li>
+</ul>
+<h2 id="mcp-and-cli-surface">MCP and CLI Surface</h2>
+<p>The new Boardmesh architecture should not remain GUI-only.</p>
+<p>Where operations are meaningful without direct pointer interaction,
+Boardmesh should expose them through:</p>
+<ul>
+<li>MCP tools</li>
+<li>runtime websocket methods</li>
+<li>the runtime CLI surface</li>
+</ul>
+<p>This applies in particular to:</p>
+<ul>
+<li>canvas creation, listing, rename, move, visibility, and export</li>
+<li>connector creation and rebinding</li>
+<li>explicit selection queries and mutations</li>
+<li>semantic selection-context queries for agent use</li>
+<li>object management actions like duplicate, delete, lock, hide,
+reorder, and canvas assignment</li>
+<li>viewport and focus actions where they make sense as programmatic
+commands</li>
+</ul>
+<p>The GUI may still own gesture-heavy interactions, but the underlying
+domain actions should be callable programmatically.</p>
+<h2 id="test-strategy">Test Strategy</h2>
+<h3 id="unit-tests">Unit Tests</h3>
+<p>Required for:</p>
+<ul>
+<li>viewport world/screen transforms</li>
+<li>canvas membership rules</li>
+<li>anchor resolution</li>
+<li>connector routing</li>
+<li>spline control generation</li>
+<li>bounds and hit testing</li>
+</ul>
+<h3 id="integration-tests">Integration Tests</h3>
+<p>Required for:</p>
+<ul>
+<li>scene adapter correctness</li>
+<li>persistence round-trips for universe documents</li>
+<li>canvas export behavior</li>
+<li>connector follow behavior when objects move</li>
+<li>MCP/runtime/CLI parity for the new universe, selection, connector,
+and object-management actions where exposed</li>
+</ul>
+<h3 id="guismoke-tests">GUI/Smoke Tests</h3>
+<p>Required for:</p>
+<ul>
+<li>pan and zoom behavior</li>
+<li>selection workflows</li>
+<li>default panel visibility</li>
+<li>connector creation flow</li>
+<li>canvas creation and focus flow</li>
+<li>object management flows such as duplicate, lock, hide, delete, and
+z-order adjustments</li>
+</ul>
+<h2 id="phased-roadmap">Phased Roadmap</h2>
+<h3 id="phase-1-foundation">Phase 1: Foundation</h3>
+<ul>
+<li>universe + viewport model</li>
+<li>panel simplification</li>
+<li>richer selection tools</li>
+<li>object management basics</li>
+<li>named canvases</li>
+<li>straight bound connectors</li>
+</ul>
+<h3 id="phase-2-structure">Phase 2: Structure</h3>
+<ul>
+<li>graph-core geometry layer</li>
+<li>orthogonal routing</li>
+<li>renderer abstraction</li>
+<li>canvas export/focus workflows</li>
+<li>stronger canvas-aware and graph-aware selection</li>
+<li>grouping and z-order management</li>
+</ul>
+<h3 id="phase-3-power">Phase 3: Power</h3>
+<ul>
+<li>spline routing</li>
+<li>optional GL backend</li>
+<li>minimap and viewport presets</li>
+<li>richer anchor editing and graph tools</li>
+<li>semantic graph selection and management workflows</li>
+</ul>
+<h2 id="non-goals-for-the-first-slice">Non-Goals For The First
+Slice</h2>
+<ul>
+<li>full BPMN/diagramming semantics</li>
+<li>collaborative OT/CRDT editing</li>
+<li>mandatory GPU rendering</li>
+<li>replacing freeform sketching with rigid node editing</li>
+</ul>
+<h2 id="success-criteria">Success Criteria</h2>
+<p>Boardmesh succeeds if it can:</p>
+<ul>
+<li>feel infinite and lightweight at first open</li>
+<li>keep freeform drawing pleasant</li>
+<li>support structured diagrams inside named canvases</li>
+<li>make connectors follow object movement reliably</li>
+<li>remain testable in pure Rust at the geometry layer</li>
+<li>render correctly with and without GL</li>
+</ul>
+</body>
+</html>

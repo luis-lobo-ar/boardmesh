@@ -1,0 +1,6 @@
+/target/
+/run/
+/var/
+/.workmesh/.index/
+/.workmesh/.locks/
+/.workmesh/.audit.log

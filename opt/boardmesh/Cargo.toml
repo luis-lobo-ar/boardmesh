@@ -1,0 +1,43 @@
+[package]
+name = "boardmesh"
+version = "0.2.0"
+edition = "2024"
+
+[features]
+default = []
+gui = ["dep:wxdragon", "wxdragon/aui"]
+
+[dependencies]
+anyhow = "1.0"
+futures-util = "0.3"
+font8x8 = "0.3"
+image = { version = "0.25", default-features = false, features = ["png"] }
+rmcp = { version = "1.1.1", features = ["transport-io"] }
+schemars = "1.2.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.47.1", features = ["macros", "net", "rt-multi-thread", "sync", "time"] }
+tokio-tungstenite = "0.23"
+tungstenite = "0.23"
+mesh-id = { path = "../../lib/mesh-id" }
+mesh-graph = { path = "../../lib/mesh-graph" }
+uuid = { version = "1.18.1", features = ["serde", "v4"] }
+wxdragon = { version = "0.9.13", optional = true }
+
+[[bin]]
+name = "boardmesh"
+path = "src/bin/boardmesh.rs"
+required-features = ["gui"]
+
+[[bin]]
+name = "boardmesh-layout-lab"
+path = "src/bin/boardmesh-layout-lab.rs"
+required-features = ["gui"]
+
+[[bin]]
+name = "boardmesh-mcp"
+path = "src/bin/boardmesh-mcp.rs"
+
+[[bin]]
+name = "boardmesh-cli"
+path = "src/bin/boardmesh-cli.rs"

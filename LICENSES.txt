@@ -1,0 +1,52 @@
+Third-Party Notices
+===================
+
+wxWidgets 3.3.2 (downloaded during Boardmesh GUI build)
+-----------------------------------------------------
+Source: https://github.com/wxWidgets/wxWidgets/releases/tag/v3.3.2
+License: wxWindows Library Licence 3.1, including its binary-distribution exception.
+Upstream notice: wxWidgets/docs/licence.txt; underlying library license: docs/lgpl.txt.
+The bundled wrapper retains the exception for its original Wayland guard patch.
+Standalone binary archives include these notices and available Cargo/native dependency license files under third-party-notices/.
+
+wxDragon 0.9.13 (locally patched)
+--------------------------------
+Source: https://github.com/AllenDang/wxDragon
+Bundled directories: opt/boardmesh/vendor/wxdragon-0.9.13-local and wxdragon-sys-0.9.13-local
+License: MIT OR Apache-2.0; distributed using the MIT option.
+Original MIT text: opt/boardmesh/vendor/LICENSE-MIT
+Listed upstream author: Allen Dang <allengnr@gmail.com>
+
+Font Awesome Free (Boardmesh assets)
+-----------------------------------
+Source: https://fontawesome.com/license/free
+Bundled directory: opt/boardmesh/assets/icons/fontawesome-free
+Icons retain CC BY 4.0, fonts retain SIL OFL 1.1, and code retains MIT.
+Original copyright and license text: opt/boardmesh/assets/icons/fontawesome-free/LICENSE.txt
+These third-party assets retain their own licenses; the Mesh MIT grant does not relicense them.
+
+Vue.js 3.5.40
+--------------
+
+Source: https://www.npmjs.com/package/vue/v/3.5.40
+Bundled file: opt/agentmesh/web/vendor/vue.global.prod.js
+License: MIT
+Copyright (c) 2018-present, Yuxi (Evan) You and Vue contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

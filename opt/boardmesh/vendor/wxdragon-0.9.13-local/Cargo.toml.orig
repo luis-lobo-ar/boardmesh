@@ -1,0 +1,32 @@
+[package]
+name = "wxdragon"
+version = "0.9.13"
+edition = "2024" # Technically, edition is often set directly or defaults, but workspace can define it.
+authors = ["Allen Dang <allengnr@gmail.com>"]
+description = "Safe Rust bindings for wxWidgets via the wxDragon C wrapper"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/AllenDang/wxDragon"
+readme = "README.md"
+keywords = ["wxwidgets", "gui", "ui", "cross-platform", "bindings"]
+categories = ["gui", "api-bindings"] # Already good
+
+[package.metadata.docs.rs]
+features = ["aui", "stc", "xrc", "richtext"]
+
+[features]
+# default = ["aui", "stc", "xrc", "richtext"]
+aui = ["wxdragon-sys/aui"]
+media-ctrl = ["wxdragon-sys/media-ctrl"]
+webview = ["wxdragon-sys/webview"]
+stc = ["wxdragon-sys/stc"]
+xrc = ["wxdragon-sys/xrc"]
+richtext = ["wxdragon-sys/richtext"]
+
+[dependencies]
+bitflags = "2.10.0"
+log = "0.4.28"
+paste = "1.0.15"
+wxdragon-macros = { version = "0.9.13" }
+wxdragon-sys = { version = "0.9.13" } 
+
+[workspace]
