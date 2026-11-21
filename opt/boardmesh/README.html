@@ -234,364 +234,114 @@
 </head>
 <body>
 <h1 id="boardmesh">Boardmesh</h1>
-<p><code>Boardmesh</code> ships a local-first board built for human +
-agent collaboration.</p>
-<p>Standalone distribution: <a
-href="https://github.com/luis-lobo-ar/boardmesh">luis-lobo-ar/boardmesh</a>.
-Clone that repository to build only Boardmesh and its required shared
-crates, or download Linux snapshot binaries from its Releases page. This
-directory remains the authoritative source; the standalone repository
-receives generated snapshots. The external export supplies its own root
-Cargo workspace, without creating another workspace inside Mesh.</p>
-<p>It currently ships four executables:</p>
+<p>Boardmesh is a local desktop board that people and agents can edit
+together. Draw a sketch, select an object, and ask an agent to inspect
+or change it. The agent reads structured objects and selection context
+through MCP. The desktop shows the result.</p>
+<p>Use Boardmesh for architecture reviews, code explanations, incident
+timelines, planning, and visual handoffs. Boards remain local JSON
+files. Boardmesh runs independently of other Mesh services.</p>
+<p><strong><a href="https://luis-lobo-ar.github.io/boardmesh/">Read the
+documentation</a></strong></p>
 <ul>
-<li><code>boardmesh</code>: a desktop GUI for drawing and inspecting
-boards</li>
-<li><code>boardmesh-layout-lab</code>: a stripped-down GUI harness for
-testing pane and toolbar layout behavior</li>
-<li><code>boardmesh-mcp</code>: an MCP stdio server so tools like Codex
-can create and edit the same board programmatically</li>
-<li><code>boardmesh-cli</code>: a terminal client for the local runtime
-command surface</li>
+<li><a href="docs/overview.html">Overview and benefits</a></li>
+<li><a href="docs/getting-started.html">Create your first shared
+board</a></li>
+<li><a href="docs/people-and-agents.html">Work with people and
+agents</a></li>
+<li><a href="docs/use-cases.html">Use cases and prompts</a></li>
+<li><a href="docs/desktop.html">Desktop reference</a></li>
+<li><a href="docs/agent-guide.html">Agent guide</a> and <a
+href="docs/tool-reference.html">complete tool reference</a></li>
+<li><a href="docs/data-and-runtime.html">Files and runtime</a></li>
+<li><a href="docs/routing.html">Compatible connector routing</a></li>
+<li><a href="docs/troubleshooting.html">Troubleshooting</a></li>
+<li><a href="docs/development.html">Development and
+verification</a></li>
 </ul>
-<p>The project is intentionally simple: board documents are JSON,
-sessions are named JSON files plus manifests, and the GUI and MCP server
-both operate on the same storage model. Raw scene-only JSON still loads
-and migrates into the newer universe/canvas document shape at the
-storage layer.</p>
-<p>Boardmesh runs independently with its included shared libraries. It
-does not require WorkMesh, AgentMesh, Telegram, a database, or another
-Mesh service. The GUI and MCP server can share one local runtime; their
-board files remain local to that installation.</p>
-<p>Read the <a href="docs/install-and-verification.html">installation
-and verification guide</a> for standalone downloads, native GUI
-dependencies, explicit data paths, and a repeatable human/agent test.
-Ecosystem deployment and cross-product references are maintained
-separately in the Mesh monorepo under
-<code>share/doc/architecture/</code>.</p>
-<h2 id="why-this-exists">Why This Exists</h2>
-<p>Most whiteboards are optimized for humans only. Most diagram
-generators are optimized for one-shot output. This project sits in the
-middle:</p>
-<ul>
-<li>you can sketch locally</li>
-<li>an MCP client can add or edit shapes</li>
-<li>the GUI live-reloads changes from the MCP side</li>
-<li>sessions make it possible to keep multiple named boards around
-without inventing a heavy backend</li>
-</ul>
-<h2 id="current-ux">Current UX</h2>
-<p>The desktop app now provides:</p>
-<ul>
-<li>a structured sidebar with session, tools, style, and object
-sections</li>
-<li>a real tool palette instead of a single dropdown</li>
-<li>undo / redo / clear actions in the main window</li>
-<li>a status bar with current mode, object counts, and MCP
-connectivity</li>
-<li>a subtle canvas grid so the board feels like a drawing surface
-instead of an empty panel</li>
-<li>a canvas-first default layout, with
-session/objects/inspector/history panels hidden until requested</li>
-<li>one-shot contextual pane surfacing: the inspector opens the first
-time a drawing tool becomes active, and the objects pane opens the first
-time the board gains content</li>
-<li>an infinite-board camera with wheel zoom, middle-drag pan, and
-fit/reset shortcuts</li>
-<li>a local WebSocket runtime bridge so the GUI can subscribe to live
-scene updates from the MCP server</li>
-</ul>
-<h2 id="architecture">Architecture</h2>
-<p>The app is split into four layers:</p>
-<ol type="1">
-<li><p>Desktop GUI <code>src/bin/boardmesh.rs</code> A wxDragon desktop
-app for local editing, selection, and visual feedback.</p></li>
-<li><p>CLI <code>src/bin/boardmesh-cli.rs</code> A terminal-friendly
-client for the runtime command surface. It can invoke scene, session,
-render, and mutation commands without going through MCP.</p></li>
-<li><p>MCP server <code>src/bin/boardmesh-mcp.rs</code> A stdio server
-exposing Boardmesh operations like adding shapes, switching sessions,
-exporting scenes, and rendering PNGs.</p></li>
-<li><p>Shared core and runtime <code>src/lib.rs</code>,
-<code>src/scene.rs</code>, <code>src/storage.rs</code>,
-<code>src/session.rs</code>, <code>src/render.rs</code>,
-<code>src/runtime.rs</code>, <code>src/runtime_client.rs</code> The
-scene model, JSON storage, session manifests, runtime method catalog,
-and websocket client helpers used by the GUI, CLI, and MCP
-server.</p></li>
-</ol>
-<p>There is no database and no web backend. The source of truth is the
-scene/session files on disk. The live coordination path between the GUI
-and <code>boardmesh-mcp</code> now uses a local WebSocket runtime
-(<code>ws://127.0.0.1:9467</code> by default) with JSON-RPC messages.
-Files remain the persistence layer.</p>
-<p>Undo/redo tracks local edits. A new external board edit clears local
-history; delayed notifications from an already acknowledged local edit
-do not.</p>
-<h2 id="session-first-workflow">Session-First Workflow</h2>
-<p>The preferred workflow is named sessions.</p>
-<p>Each session has:</p>
-<ul>
-<li><code>boardmesh-sessions/&lt;session_id&gt;.json</code></li>
-<li><code>boardmesh-sessions/&lt;session_id&gt;.manifest.json</code></li>
-</ul>
-<p>The scene file stores objects. The manifest stores metadata such as
-attached GUI windows and MCP server heartbeats.</p>
-<p>By default, the installed setup uses the named session:</p>
-<p><code>default</code></p>
-<p>Raw scene-file mode still exists for compatibility, but sessions are
-the primary model.</p>
-<h2 id="quick-start">Quick Start</h2>
-<h3 id="build">Build</h3>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> build <span class="at">--bin</span> boardmesh-cli</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> build <span class="at">--bin</span> boardmesh-mcp</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> build <span class="at">--bin</span> boardmesh <span class="at">--features</span> gui</span></code></pre></div>
-<h2 id="ci-and-release-artifacts">CI And Release Artifacts</h2>
-<p>Boardmesh has a product-specific GitHub Actions workflow at
-<code>.github/workflows/boardmesh-build.yml</code>.</p>
-<p>The workflow:</p>
-<ul>
-<li>runs Boardmesh package tests through the reusable monorepo Rust
-product workflow</li>
-<li>builds the non-GUI wrappers <code>boardmesh-cli</code> and
-<code>boardmesh-mcp</code></li>
-<li>builds the GUI binaries <code>boardmesh</code> and
-<code>boardmesh-layout-lab</code> with the <code>gui</code> feature</li>
-<li>uploads a release-friendly <code>boardmesh-linux-x86_64</code>
-artifact package containing the current Boardmesh binary names</li>
-</ul>
-<p>The monorepo workflow uploads CI artifacts. The standalone repository
-has its own workflow that also publishes immutable snapshot prereleases.
-Both build the GUI and operator binaries; the standalone workflow
-verifies actual MCP/CLI and desktop interaction before publishing.
-Snapshot tags identify a source commit and do not change the product’s
-SemVer version.</p>
-<h3 id="run-the-gui">Run the GUI</h3>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh <span class="at">--features</span> gui <span class="at">--</span> <span class="at">--session</span> default</span></code></pre></div>
-<p>If you omit <code>--session</code> and do not force a raw scene file,
-the app opens a session picker.</p>
-<p>Useful flags:</p>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh <span class="at">--features</span> gui <span class="at">--</span> <span class="at">--session</span> default <span class="at">--runtime-url</span> ws://127.0.0.1:9467</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh <span class="at">--features</span> gui <span class="at">--</span> <span class="at">--session</span> default <span class="at">--no-runtime</span></span></code></pre></div>
-<h3 id="run-the-layout-lab">Run the layout lab</h3>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-layout-lab <span class="at">--features</span> gui</span></code></pre></div>
-<p>Use this when you want to test menu-driven show/hide, toolbar
-docking, and layout state synchronization without involving scene files,
-drawing tools, or MCP traffic.</p>
-<h3 id="run-the-mcp-server">Run the MCP server</h3>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-mcp <span class="at">--</span> <span class="at">--session</span> default</span></code></pre></div>
-<p>By default, the MCP server also starts the local runtime WebSocket
-bridge on <code>127.0.0.1:9467</code>.</p>
-<p>Useful flags:</p>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-mcp <span class="at">--</span> <span class="at">--session</span> default <span class="at">--runtime-addr</span> 127.0.0.1:9467</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-mcp <span class="at">--</span> <span class="at">--session</span> default <span class="at">--no-runtime-ws</span></span></code></pre></div>
-<h3 id="run-the-cli">Run the CLI</h3>
-<div class="sourceCode" id="cb7"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-cli <span class="at">--</span> list-methods</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-cli <span class="at">--</span> get_scene</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-cli <span class="at">--</span> add_text <span class="at">--json</span> <span class="st">&#39;{&quot;position&quot;:&quot;120,120&quot;,&quot;text&quot;:&quot;hello&quot;}&#39;</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-cli <span class="at">--</span> add_text <span class="at">--json</span> <span class="st">&#39;{&quot;session_id&quot;:&quot;default&quot;,&quot;position&quot;:&quot;120,120&quot;,&quot;text&quot;:&quot;hello&quot;}&#39;</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-cli <span class="at">--</span> session.list</span></code></pre></div>
-<p>The CLI talks to the local runtime websocket rather than to MCP
-stdio. It supports the full runtime method list, which includes:</p>
-<ul>
-<li>runtime-native methods like <code>session.attach</code>,
-<code>session.list</code>, <code>session.switch</code>,
-<code>scene.get</code>, and <code>scene.replace</code></li>
-<li>the Boardmesh command surface mirrored from MCP, such as
-<code>get_universe</code>, <code>get_selection_context</code>,
-<code>create_canvas</code>, <code>set_active_canvas</code>,
-<code>select_canvases</code>, <code>assign_object_to_canvas</code>,
-<code>clear_object_canvas_assignment</code>, <code>add_line</code>,
-<code>add_text</code>, <code>duplicate_object</code>,
-<code>set_object_visibility</code>, <code>set_object_locked</code>,
-<code>move_object_to_front</code>, <code>render_scene_png</code>,
-<code>switch_session</code>, <code>save_scene_as</code>, and
-<code>get_tool_help</code></li>
-</ul>
-<p>Runtime session scope is per websocket client. For one-shot CLI
-calls, pass <code>"session_id"</code> in the JSON payload when the
-method should target a specific named session; long-lived clients can
-also use <code>session.attach</code> or <code>session.switch</code> on
-their own connection before sending follow-up scene updates.</p>
-<p>Useful flags:</p>
-<div class="sourceCode" id="cb8"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-cli <span class="at">--</span> get_scene <span class="at">--compact</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-cli <span class="at">--</span> add_circle <span class="at">--json-file</span> ./circle.json</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-cli <span class="at">--</span> scene.replace <span class="at">--json</span> <span class="st">&#39;{&quot;session_id&quot;:&quot;default&quot;,&quot;scene&quot;:{&quot;objects&quot;:[],&quot;selected_object_ids&quot;:[]}}&#39;</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-cli <span class="at">--</span> session.list <span class="at">--runtime-url</span> ws://127.0.0.1:9467</span></code></pre></div>
-<h2 id="desktop-usage">Desktop Usage</h2>
-<p>Supported tools:</p>
-<ul>
-<li>Select</li>
-<li>Pen</li>
-<li>Line</li>
-<li>Rectangle</li>
-<li>Circle</li>
-<li>Triangle</li>
-<li>Polygon</li>
-<li>Fill</li>
-</ul>
-<p>Useful shortcuts:</p>
-<ul>
-<li><code>Delete</code> / <code>Backspace</code>: delete selected
-objects</li>
-<li><code>Ctrl+Z</code>: undo</li>
-<li><code>Ctrl+Shift+Z</code> or <code>Ctrl+Y</code>: redo</li>
-<li>Mouse wheel: zoom around the cursor</li>
-<li>Middle drag: pan the board</li>
-<li><code>Ctrl+0</code>: reset the camera</li>
-<li><code>Ctrl+1</code>: fit the board content</li>
-<li><code>Ctrl+2</code>: fit the current selection</li>
-<li><code>Enter</code>: finish polygon / 3-point triangle</li>
-<li><code>Esc</code>: cancel the active draft</li>
-</ul>
-<p>Behavior notes:</p>
-<ul>
-<li>the object list reflects current objects in the scene file</li>
-<li>checking items selects them in the scene</li>
-<li>Ctrl-click on the canvas toggles object selection</li>
-<li>the GUI polls the scene file and reloads changes written by MCP</li>
-</ul>
-<h2 id="scene-modes">Scene Modes</h2>
-<h3 id="named-session-mode">Named session mode</h3>
-<p>Recommended.</p>
-<div class="sourceCode" id="cb9"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh <span class="at">--features</span> gui <span class="at">--</span> <span class="at">--session</span> review-board</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-mcp <span class="at">--</span> <span class="at">--session</span> review-board</span></code></pre></div>
-<h3 id="raw-scene-file-mode">Raw scene-file mode</h3>
-<p>Compatibility path for direct file workflows.</p>
-<div class="sourceCode" id="cb10"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh <span class="at">--features</span> gui <span class="at">--</span> <span class="at">--scene</span> ./boardmesh-scene.json</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh-mcp <span class="at">--</span> <span class="at">--scene</span> ./boardmesh-scene.json</span></code></pre></div>
-<h2 id="mcp-usage">MCP Usage</h2>
-<p>The MCP server exposes tools for:</p>
-<ul>
-<li>session management</li>
-<li>scene import/export</li>
-<li>drawing primitives</li>
-<li>selection, semantic selection context, and deletion</li>
-<li>PNG rendering</li>
-</ul>
-<p>Common workflow:</p>
-<ol type="1">
-<li><code>list_sessions</code></li>
-<li><code>create_session</code> or <code>switch_session</code></li>
-<li>inspect the active selection with <code>get_selection_context</code>
-when an agent needs to resolve “this” into object kind, canvas
-membership, connected objects, and nearby context</li>
-<li>draw with <code>add_rectangle</code>, <code>add_text</code>,
-<code>add_line</code>, etc.</li>
-<li>export with <code>render_scene_png</code> or
-<code>export_scene_json</code></li>
-</ol>
-<p>If an agent needs exact payload examples, use
-<code>get_tool_help</code> or <code>get_api_docs</code>.</p>
-<h2 id="install-in-codex">Install In Codex</h2>
-<p>Fast path:</p>
-<div class="sourceCode" id="cb11"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="va">RUSTFLAGS</span><span class="op">=</span><span class="st">&#39;-C link-arg=-lSDL&#39;</span> <span class="fu">bash</span> opt/boardmesh/install.sh</span></code></pre></div>
-<p>What <code>install.sh</code> does:</p>
-<ul>
-<li>builds the release desktop and MCP binaries</li>
-<li>installs them under <code>~/.local/share/boardmesh</code></li>
-<li>creates the target scene file on first install if it does not exist
-yet</li>
-<li>registers the MCP server in Codex</li>
-<li>optionally stops installed GUI/MCP processes before replacing
-binaries and relaunches previously running installed GUI windows</li>
-</ul>
-<p>Run this source-install command from the workspace root after
-installing the Linux GUI build dependencies in the installation guide.
-New installations start with an empty board; reinstalling preserves
-existing board files. CLI and layout-lab binaries are available
-separately in the release archive.</p>
-<p>Important flags:</p>
-<ul>
-<li><code>--session ID</code>: install against a named session</li>
-<li><code>--scene PATH</code>: force raw scene mode</li>
-<li><code>--no-stop</code>: leave existing processes running</li>
-<li><code>--no-restart-gui</code>: do not relaunch GUI windows after
-install</li>
-<li><code>--no-codex</code>: skip Codex registration</li>
-</ul>
-<p>Manual Codex registration example:</p>
-<div class="sourceCode" id="cb12"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">codex</span> mcp add boardmesh <span class="at">--</span> <span class="dt">\</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  /home/luis/dev/luislobo/mesh/target/release/boardmesh-mcp <span class="dt">\</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--session</span> default</span></code></pre></div>
-<h2 id="development">Development</h2>
-<p>Product planning docs:</p>
-<ul>
-<li><code>docs/PRD-001-infinite-universe-and-graph-canvases.html</code></li>
-</ul>
-<h3 id="format">Format</h3>
-<div class="sourceCode" id="cb13"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> fmt</span></code></pre></div>
-<h3 id="tests">Tests</h3>
-<div class="sourceCode" id="cb14"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> test</span></code></pre></div>
-<h3 id="gui-smoke-test">GUI smoke test</h3>
-<div class="sourceCode" id="cb15"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> opt/boardmesh/scripts/smoke_gui.py <span class="at">--scenario</span> draw</span></code></pre></div>
-<p>The smoke script builds the GUI, launches it under a virtual display,
-performs scripted interactions, and writes a screenshot artifact.</p>
-<p>From the workspace root, verify an extracted release without
-compiling it:</p>
-<div class="sourceCode" id="cb16"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> opt/boardmesh/scripts/verify_agent.py <span class="dt">\</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--bin-dir</span> /absolute/path/boardmesh-linux-x86_64/bin <span class="dt">\</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--gui-binary</span> /absolute/path/boardmesh-linux-x86_64/bin/boardmesh</span></code></pre></div>
-<p>This exercises actual MCP tools and CLI calls, live GUI updates,
-human drawing, undo/redo, separate sessions, JSON/PNG exports, and
-persistence after reopening and restarting. It creates isolated test
-sessions and keeps JSON transcripts and screenshots in the reported
-temporary directory. The GUI check requires Xvfb, xdotool, ImageMagick,
-and Python Xlib. See the installation guide for exact commands and test
-scope.</p>
-<h3 id="layout-lab">Layout lab</h3>
-<p>The layout lab exists specifically for AUI and menu/toolbar
-debugging.</p>
-<p>It keeps only:</p>
-<ul>
-<li>the menu bar and dock-position commands</li>
-<li>three toolbars</li>
-<li>three side panes</li>
-<li>a center placeholder panel</li>
-<li>a bottom event log</li>
-</ul>
-<p>That makes it the safest place to reproduce docking and visibility
-bugs before changing the main Boardmesh window.</p>
-<h2 id="repository-layout">Repository Layout</h2>
-<pre class="text"><code>src/bin/boardmesh.rs        Desktop GUI entrypoint for `boardmesh`
-src/bin/boardmesh-layout-lab.rs Layout test harness entrypoint for `boardmesh-layout-lab`
-src/bin/boardmesh-mcp.rs    MCP server entrypoint for `boardmesh-mcp`
-src/gui_layout.rs            Shared layout state and actions
-src/scene.rs                 Scene model and object logic
-src/storage.rs               Scene/session storage helpers
-src/session.rs               Session manifests and runtime tracking
-src/render.rs                PNG rendering
-scripts/smoke_gui.py         GUI smoke test
-boardmesh-sessions/          Named session files
-boardmesh-scene.json         Default raw-scene file</code></pre>
-<h2 id="compatibility-notes">Compatibility Notes</h2>
-<ul>
-<li>Sessions are the preferred model.</li>
-<li>Raw scene files remain supported for compatibility.</li>
-<li>Existing MCP clients holding an old stdio process may need to be
-restarted after installing a new binary.</li>
-<li>Use <code>boardmesh</code>, <code>boardmesh-layout-lab</code>,
-<code>boardmesh-mcp</code>, and <code>boardmesh-cli</code>.</li>
-<li><code>cargo test -p boardmesh</code> exercises the shared crate and
-its wrapper binaries.</li>
-</ul>
-<h2 id="version">Version</h2>
-<p>Current package version: <code>0.2.0</code></p>
+<h2 id="install">Install</h2>
+<p>Download a Linux x86_64 snapshot and its checksum from <a
+href="https://github.com/luis-lobo-ar/boardmesh/releases">Releases</a>.
+Follow the <a href="docs/install-and-verification.html">installation
+guide</a> to verify and extract it, install native desktop libraries,
+and choose an explicit data directory.</p>
+<p>The archive contains four executables:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Executable</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>boardmesh</code></td>
+<td>Desktop editor</td>
+</tr>
+<tr class="even">
+<td><code>boardmesh-mcp</code></td>
+<td>MCP stdio server and local runtime authority</td>
+</tr>
+<tr class="odd">
+<td><code>boardmesh-cli</code></td>
+<td>Command-line client for the runtime</td>
+</tr>
+<tr class="even">
+<td><code>boardmesh-layout-lab</code></td>
+<td>Desktop layout development tool</td>
+</tr>
+</tbody>
+</table>
+<p>Connect one MCP client to <code>boardmesh-mcp</code>. Open the
+desktop against the same sessions directory, session ID, and runtime
+URL. The <a href="docs/getting-started.html">first-board tutorial</a>
+gives exact commands and tested tool calls.</p>
+<h2 id="build-from-source">Build from source</h2>
+<p>Use Rust 1.95 or newer. Run from the workspace root:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> build <span class="at">--locked</span> <span class="at">-p</span> boardmesh <span class="at">--bin</span> boardmesh-cli <span class="at">--bin</span> boardmesh-mcp</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> test <span class="at">--locked</span> <span class="at">-p</span> boardmesh</span></code></pre></div>
+<p>For the desktop, install the <a
+href="docs/install-and-verification.html">native development
+dependencies</a>, then build:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="va">RUSTFLAGS</span><span class="op">=</span><span class="st">&#39;-C link-arg=-lSDL&#39;</span> <span class="ex">cargo</span> build <span class="at">--locked</span> <span class="at">-p</span> boardmesh <span class="at">--features</span> gui</span></code></pre></div>
+<p>Generate and validate API documentation against actual binaries:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> opt/boardmesh/scripts/generate_tool_reference.py <span class="at">--bin-dir</span> target/debug</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> opt/boardmesh/scripts/verify_documentation.py <span class="at">--bin-dir</span> target/debug</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> opt/boardmesh/scripts/verify_agent.py <span class="at">--bin-dir</span> target/debug <span class="dt">\</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--gui-binary</span> target/debug/boardmesh</span></code></pre></div>
+<p>The desktop verifier requires Xvfb, xdotool, ImageMagick, and Python
+Xlib. It tests real MCP and CLI calls, GUI drawing, live updates,
+undo/redo, persistence, and PNG export in isolated temporary
+sessions.</p>
+<h2 id="compatibility-and-current-limits">Compatibility and current
+limits</h2>
+<p>Existing boards retain their JSON format, IDs, and endpoint bindings.
+A guarded <code>ortho-router</code> adapter improves blocked orthogonal
+connectors. Clear routes, straight and spline connectors, ordinary
+lines, and unsupported cases retain their existing geometry. <a
+href="docs/routing.html">Routing details and comparison evidence</a>
+describe the bounds and fallbacks.</p>
+<p>The release advertises 40 MCP tools and 45 runtime methods. Some
+richer scene-model objects have no dedicated MCP creation tool. Undo
+belongs to the local desktop window. There is no browser editor, hosted
+collaboration service, or automatic WorkMesh task synchronization.
+Optional toolbar icons use fallback shapes when the original source
+assets are unavailable.</p>
+<h2 id="source-and-distribution">Source and distribution</h2>
+<p>Authoritative development lives in the Mesh monorepo under
+<code>opt/boardmesh</code>. The <a
+href="https://github.com/luis-lobo-ar/boardmesh">public standalone
+repository</a> receives generated snapshots of Boardmesh and its
+required shared libraries. It builds without private Mesh access or
+another Mesh product. The internal <code>mesh-id</code> helper remains
+unpublished and is included as source.</p>
+<p>The standalone GitHub workflow tests the product and shared
+libraries, builds four Linux binaries, and tests an extracted release
+before publishing an immutable snapshot. A separate workflow publishes
+these HTML manuals to GitHub Pages. <a
+href="docs/development.html">Development</a> explains source ownership,
+provenance, and contribution boundaries.</p>
+<p>Mesh code is MIT-licensed. Preserve the third-party notices
+distributed with source and binaries.</p>
 </body>
 </html>

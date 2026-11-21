@@ -1,0 +1,947 @@
+{
+  "ortho_router_version": "0.1.1",
+  "comparison": "geometry, not latency",
+  "cases": [
+    {
+      "candidate": [
+        {
+          "x": 100.0,
+          "y": 30.0
+        },
+        {
+          "x": 400.0,
+          "y": 30.0
+        }
+      ],
+      "candidate_crossings": 0,
+      "name": "clear",
+      "normalized": [
+        {
+          "x": 100.0,
+          "y": 30.0
+        },
+        {
+          "x": 400.0,
+          "y": 30.0
+        }
+      ],
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true,
+      "old": [
+        {
+          "x": 100.0,
+          "y": 30.0
+        },
+        {
+          "x": 250.0,
+          "y": 30.0
+        },
+        {
+          "x": 250.0,
+          "y": 30.0
+        },
+        {
+          "x": 400.0,
+          "y": 30.0
+        }
+      ],
+      "old_crossings": 0,
+      "raw_exact_endpoints": true,
+      "routed": true
+    },
+    {
+      "candidate": [
+        {
+          "x": 100.0,
+          "y": 30.0
+        },
+        {
+          "x": 188.0,
+          "y": 30.0
+        },
+        {
+          "x": 188.0,
+          "y": -52.0
+        },
+        {
+          "x": 388.0,
+          "y": -52.0
+        },
+        {
+          "x": 388.0,
+          "y": 30.0
+        },
+        {
+          "x": 400.0,
+          "y": 30.0
+        }
+      ],
+      "candidate_crossings": 0,
+      "name": "blocked",
+      "normalized": [
+        {
+          "x": 100.0,
+          "y": 30.0
+        },
+        {
+          "x": 188.0,
+          "y": 30.0
+        },
+        {
+          "x": 188.0,
+          "y": -52.0
+        },
+        {
+          "x": 388.0,
+          "y": -52.0
+        },
+        {
+          "x": 388.0,
+          "y": 30.0
+        },
+        {
+          "x": 400.0,
+          "y": 30.0
+        }
+      ],
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true,
+      "old": [
+        {
+          "x": 100.0,
+          "y": 30.0
+        },
+        {
+          "x": 250.0,
+          "y": 30.0
+        },
+        {
+          "x": 250.0,
+          "y": 30.0
+        },
+        {
+          "x": 400.0,
+          "y": 30.0
+        }
+      ],
+      "old_crossings": 1,
+      "raw_exact_endpoints": true,
+      "routed": true
+    },
+    {
+      "candidate": [
+        {
+          "x": 0.0,
+          "y": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 138.0
+        },
+        {
+          "x": 52.0,
+          "y": 138.0
+        },
+        {
+          "x": 52.0,
+          "y": 388.0
+        },
+        {
+          "x": 0.0,
+          "y": 388.0
+        },
+        {
+          "x": 0.0,
+          "y": 400.0
+        }
+      ],
+      "candidate_crossings": 0,
+      "name": "vertical-free",
+      "normalized": [
+        {
+          "x": 0.0,
+          "y": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 138.0
+        },
+        {
+          "x": 52.0,
+          "y": 138.0
+        },
+        {
+          "x": 52.0,
+          "y": 388.0
+        },
+        {
+          "x": 0.0,
+          "y": 388.0
+        },
+        {
+          "x": 0.0,
+          "y": 400.0
+        }
+      ],
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true,
+      "old": [
+        {
+          "x": 0.0,
+          "y": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 400.0
+        },
+        {
+          "x": 0.0,
+          "y": 400.0
+        }
+      ],
+      "old_crossings": 1,
+      "raw_exact_endpoints": true,
+      "routed": true
+    },
+    {
+      "candidate": [
+        {
+          "x": -400.0,
+          "y": -100.0
+        },
+        {
+          "x": -262.0,
+          "y": -100.0
+        },
+        {
+          "x": -262.0,
+          "y": -38.0
+        },
+        {
+          "x": -12.0,
+          "y": -38.0
+        },
+        {
+          "x": -12.0,
+          "y": -100.0
+        },
+        {
+          "x": 0.0,
+          "y": -100.0
+        }
+      ],
+      "candidate_crossings": 0,
+      "name": "negative",
+      "normalized": [
+        {
+          "x": -400.0,
+          "y": -100.0
+        },
+        {
+          "x": -262.0,
+          "y": -100.0
+        },
+        {
+          "x": -262.0,
+          "y": -38.0
+        },
+        {
+          "x": -12.0,
+          "y": -38.0
+        },
+        {
+          "x": -12.0,
+          "y": -100.0
+        },
+        {
+          "x": 0.0,
+          "y": -100.0
+        }
+      ],
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true,
+      "old": [
+        {
+          "x": -400.0,
+          "y": -100.0
+        },
+        {
+          "x": -200.0,
+          "y": -100.0
+        },
+        {
+          "x": -200.0,
+          "y": -100.0
+        },
+        {
+          "x": 0.0,
+          "y": -100.0
+        }
+      ],
+      "old_crossings": 1,
+      "raw_exact_endpoints": true,
+      "routed": true
+    },
+    {
+      "candidate": [
+        {
+          "x": 16777216.0,
+          "y": 16777216.0
+        },
+        {
+          "x": 16777404.0,
+          "y": 16777216.0
+        },
+        {
+          "x": 16777404.0,
+          "y": 16777316.0
+        },
+        {
+          "x": 16777416.0,
+          "y": 16777316.0
+        }
+      ],
+      "candidate_crossings": 0,
+      "name": "precision",
+      "normalized": [
+        {
+          "x": 16777217.0,
+          "y": 16777217.0
+        },
+        {
+          "x": 16777405.0,
+          "y": 16777217.0
+        },
+        {
+          "x": 16777405.0,
+          "y": 16777317.0
+        },
+        {
+          "x": 16777417.0,
+          "y": 16777317.0
+        }
+      ],
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true,
+      "old": [
+        {
+          "x": 16777217.0,
+          "y": 16777217.0
+        },
+        {
+          "x": 16777317.0,
+          "y": 16777217.0
+        },
+        {
+          "x": 16777317.0,
+          "y": 16777317.0
+        },
+        {
+          "x": 16777417.0,
+          "y": 16777317.0
+        }
+      ],
+      "old_crossings": 0,
+      "raw_exact_endpoints": false,
+      "routed": true
+    },
+    {
+      "candidate": [
+        {
+          "x": 0.0,
+          "y": 0.0
+        },
+        {
+          "x": 16777204.0,
+          "y": 0.0
+        },
+        {
+          "x": 16777204.0,
+          "y": 101.0
+        },
+        {
+          "x": 16777216.0,
+          "y": 101.0
+        }
+      ],
+      "candidate_crossings": 0,
+      "name": "wide-precision",
+      "normalized": [
+        {
+          "x": 0.0,
+          "y": 0.0
+        },
+        {
+          "x": 16777204.0,
+          "y": 0.0
+        },
+        {
+          "x": 16777204.0,
+          "y": 101.0
+        },
+        {
+          "x": 16777216.0,
+          "y": 101.0
+        }
+      ],
+      "normalized_exact_endpoints": false,
+      "normalized_routed": true,
+      "old": [
+        {
+          "x": 0.0,
+          "y": 0.0
+        },
+        {
+          "x": 8388608.5,
+          "y": 0.0
+        },
+        {
+          "x": 8388608.5,
+          "y": 101.0
+        },
+        {
+          "x": 16777217.0,
+          "y": 101.0
+        }
+      ],
+      "old_crossings": 0,
+      "raw_exact_endpoints": false,
+      "routed": true
+    },
+    {
+      "candidate": [
+        {
+          "x": 10.0,
+          "y": 10.0
+        },
+        {
+          "x": 10.0,
+          "y": 10.0
+        }
+      ],
+      "candidate_crossings": 0,
+      "name": "same-point",
+      "normalized": [
+        {
+          "x": 10.0,
+          "y": 10.0
+        },
+        {
+          "x": 10.0,
+          "y": 10.0
+        }
+      ],
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true,
+      "old": [
+        {
+          "x": 10.0,
+          "y": 10.0
+        },
+        {
+          "x": 10.0,
+          "y": 10.0
+        },
+        {
+          "x": 10.0,
+          "y": 10.0
+        },
+        {
+          "x": 10.0,
+          "y": 10.0
+        }
+      ],
+      "old_crossings": 0,
+      "raw_exact_endpoints": true,
+      "routed": true
+    },
+    {
+      "candidate": [
+        {
+          "x": 108.0,
+          "y": 26.0
+        },
+        {
+          "x": 188.0,
+          "y": 26.0
+        },
+        {
+          "x": 188.0,
+          "y": 112.0
+        },
+        {
+          "x": 380.0,
+          "y": 112.0
+        },
+        {
+          "x": 380.0,
+          "y": 34.0
+        },
+        {
+          "x": 392.0,
+          "y": 34.0
+        }
+      ],
+      "candidate_crossings": 0,
+      "name": "offset",
+      "normalized": [
+        {
+          "x": 108.0,
+          "y": 26.0
+        },
+        {
+          "x": 188.0,
+          "y": 26.0
+        },
+        {
+          "x": 188.0,
+          "y": 112.0
+        },
+        {
+          "x": 380.0,
+          "y": 112.0
+        },
+        {
+          "x": 380.0,
+          "y": 34.0
+        },
+        {
+          "x": 392.0,
+          "y": 34.0
+        }
+      ],
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true,
+      "old": [
+        {
+          "x": 108.0,
+          "y": 26.0
+        },
+        {
+          "x": 250.0,
+          "y": 26.0
+        },
+        {
+          "x": 250.0,
+          "y": 34.0
+        },
+        {
+          "x": 392.0,
+          "y": 34.0
+        }
+      ],
+      "old_crossings": 1,
+      "raw_exact_endpoints": true,
+      "routed": true
+    },
+    {
+      "name": "anchors-North-North",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-North-South",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-North-East",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-North-West",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-North-NorthEast",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-North-NorthWest",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-North-SouthEast",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-North-SouthWest",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-North-Center",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-South-North",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-South-South",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-South-East",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-South-West",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-South-NorthEast",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-South-NorthWest",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-South-SouthEast",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-South-SouthWest",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-South-Center",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-East-North",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-East-South",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-East-East",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-East-West",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-East-NorthEast",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-East-NorthWest",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-East-SouthEast",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-East-SouthWest",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-East-Center",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-West-North",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-West-South",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-West-East",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": false
+    },
+    {
+      "name": "anchors-West-West",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": false
+    },
+    {
+      "name": "anchors-West-NorthEast",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-West-NorthWest",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-West-SouthEast",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-West-SouthWest",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-West-Center",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": false
+    },
+    {
+      "name": "anchors-NorthEast-North",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-NorthEast-South",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-NorthEast-East",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-NorthEast-West",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-NorthEast-NorthEast",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-NorthEast-NorthWest",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-NorthEast-SouthEast",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-NorthEast-SouthWest",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-NorthEast-Center",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-NorthWest-North",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-NorthWest-South",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-NorthWest-East",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-NorthWest-West",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-NorthWest-NorthEast",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": false
+    },
+    {
+      "name": "anchors-NorthWest-NorthWest",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": false
+    },
+    {
+      "name": "anchors-NorthWest-SouthEast",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-NorthWest-SouthWest",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-NorthWest-Center",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-SouthEast-North",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-SouthEast-South",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-SouthEast-East",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-SouthEast-West",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-SouthEast-NorthEast",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-SouthEast-NorthWest",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-SouthEast-SouthEast",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-SouthEast-SouthWest",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-SouthEast-Center",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-SouthWest-North",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-SouthWest-South",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-SouthWest-East",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-SouthWest-West",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-SouthWest-NorthEast",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-SouthWest-NorthWest",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-SouthWest-SouthEast",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": false
+    },
+    {
+      "name": "anchors-SouthWest-SouthWest",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": false
+    },
+    {
+      "name": "anchors-SouthWest-Center",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-Center-North",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-Center-South",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-Center-East",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-Center-West",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-Center-NorthEast",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-Center-NorthWest",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-Center-SouthEast",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-Center-SouthWest",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    },
+    {
+      "name": "anchors-Center-Center",
+      "normalized_exact_endpoints": true,
+      "normalized_routed": true
+    }
+  ]
+}

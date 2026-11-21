@@ -1,0 +1,50 @@
+{
+  "name": "Boardmesh",
+  "version": "0.2.0",
+  "summary": "Local desktop boards shared by people and agents through MCP and CLI.",
+  "standalone_repository": "https://github.com/luis-lobo-ar/boardmesh",
+  "documentation_site": "https://luis-lobo-ar.github.io/boardmesh/",
+  "canonical_docs": {
+    "home": "docs/README.html",
+    "overview": "docs/overview.html",
+    "tutorial": "docs/getting-started.html",
+    "collaboration": "docs/people-and-agents.html",
+    "use_cases": "docs/use-cases.html",
+    "desktop": "docs/desktop.html",
+    "agents": "docs/agent-guide.html",
+    "tools": "docs/tool-reference.html",
+    "tool_schemas": "docs/tool-reference.json",
+    "storage": "docs/data-and-runtime.html",
+    "routing": "docs/routing.html",
+    "installation": "docs/install-and-verification.html",
+    "troubleshooting": "docs/troubleshooting.html",
+    "development": "docs/development.html"
+  },
+  "interfaces": {
+    "desktop": "boardmesh",
+    "mcp_stdio": "boardmesh-mcp",
+    "cli": "boardmesh-cli",
+    "layout_lab": "boardmesh-layout-lab",
+    "mcp_tool_count": 40,
+    "runtime_method_count": 45,
+    "default_runtime_url": "ws://127.0.0.1:9467"
+  },
+  "requirements": {
+    "rust_minimum": "1.95",
+    "binary_platform": "Linux x86_64",
+    "other_mesh_services": false,
+    "mcp_client": "Required to initialize and keep the stdio server running."
+  },
+  "verification": [
+    "cargo test --locked -p boardmesh",
+    "python3 opt/boardmesh/scripts/verify_documentation.py --bin-dir target/debug",
+    "python3 opt/boardmesh/scripts/verify_agent.py --bin-dir target/debug --gui-binary target/debug/boardmesh"
+  ],
+  "limits": [
+    "One local runtime authority per board directory.",
+    "No browser editor or hosted multi-user service.",
+    "No MCP add_link or add_connector tool.",
+    "Orthogonal routing is guarded and may retain legacy paths.",
+    "mesh-id remains an internal bundled helper."
+  ]
+}

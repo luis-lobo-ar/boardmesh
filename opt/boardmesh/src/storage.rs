@@ -8,7 +8,7 @@ use std::time::SystemTime;
 pub fn ensure_scene_file(path: &Path) -> Result<SceneDocument> {
     match load_scene(path) {
         Ok(scene) => Ok(scene),
-        Err(error) if !path.exists() => {
+        Err(_) if !path.exists() => {
             let scene = SceneDocument::default();
             save_scene(path, &scene)?;
             Ok(scene)
@@ -61,7 +61,7 @@ pub fn save_scene(path: &Path, scene: &SceneDocument) -> Result<()> {
 pub fn ensure_universe_file(path: &Path) -> Result<UniverseDocument> {
     match load_universe(path) {
         Ok(universe) => Ok(universe),
-        Err(error) if !path.exists() => {
+        Err(_) if !path.exists() => {
             let universe = UniverseDocument::default();
             save_universe(path, &universe)?;
             Ok(universe)
@@ -115,7 +115,7 @@ pub fn load_scene_if_changed(
 ) -> Result<Option<(SceneDocument, SystemTime)>> {
     let modified = match last_modified(path) {
         Ok(modified) => modified,
-        Err(error) if !path.exists() => return Ok(None),
+        Err(_) if !path.exists() => return Ok(None),
         Err(error) => return Err(error),
     };
 

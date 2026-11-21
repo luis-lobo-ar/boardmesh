@@ -1,356 +1,73 @@
 # Boardmesh
 
-`Boardmesh` ships a local-first board built for human + agent collaboration.
+Boardmesh is a local desktop board that people and agents can edit together. Draw a sketch, select an object, and ask an agent to inspect or change it. The agent reads structured objects and selection context through MCP. The desktop shows the result.
 
-Standalone distribution: [luis-lobo-ar/boardmesh](https://github.com/luis-lobo-ar/boardmesh). Clone that repository to build only Boardmesh and its required shared crates, or download Linux snapshot binaries from its Releases page. This directory remains the authoritative source; the standalone repository receives generated snapshots. The external export supplies its own root Cargo workspace, without creating another workspace inside Mesh.
+Use Boardmesh for architecture reviews, code explanations, incident timelines, planning, and visual handoffs. Boards remain local JSON files. Boardmesh runs independently of other Mesh services.
 
-It currently ships four executables:
+**[Read the documentation](https://luis-lobo-ar.github.io/boardmesh/)**
 
-- `boardmesh`: a desktop GUI for drawing and inspecting boards
-- `boardmesh-layout-lab`: a stripped-down GUI harness for testing pane and toolbar layout behavior
-- `boardmesh-mcp`: an MCP stdio server so tools like Codex can create and edit the same board programmatically
-- `boardmesh-cli`: a terminal client for the local runtime command surface
+- [Overview and benefits](docs/overview.html)
+- [Create your first shared board](docs/getting-started.html)
+- [Work with people and agents](docs/people-and-agents.html)
+- [Use cases and prompts](docs/use-cases.html)
+- [Desktop reference](docs/desktop.html)
+- [Agent guide](docs/agent-guide.html) and [complete tool reference](docs/tool-reference.html)
+- [Files and runtime](docs/data-and-runtime.html)
+- [Compatible connector routing](docs/routing.html)
+- [Troubleshooting](docs/troubleshooting.html)
+- [Development and verification](docs/development.html)
 
-The project is intentionally simple: board documents are JSON, sessions are named JSON files plus manifests, and the GUI and MCP server both operate on the same storage model. Raw scene-only JSON still loads and migrates into the newer universe/canvas document shape at the storage layer.
+## Install
 
-Boardmesh runs independently with its included shared libraries. It does not require WorkMesh, AgentMesh, Telegram, a database, or another Mesh service. The GUI and MCP server can share one local runtime; their board files remain local to that installation.
+Download a Linux x86_64 snapshot and its checksum from [Releases](https://github.com/luis-lobo-ar/boardmesh/releases). Follow the [installation guide](docs/install-and-verification.html) to verify and extract it, install native desktop libraries, and choose an explicit data directory.
 
-Read the [installation and verification guide](docs/install-and-verification.html) for standalone downloads, native GUI dependencies, explicit data paths, and a repeatable human/agent test. Ecosystem deployment and cross-product references are maintained separately in the Mesh monorepo under `share/doc/architecture/`.
+The archive contains four executables:
 
-## Why This Exists
+| Executable | Purpose |
+| --- | --- |
+| `boardmesh` | Desktop editor |
+| `boardmesh-mcp` | MCP stdio server and local runtime authority |
+| `boardmesh-cli` | Command-line client for the runtime |
+| `boardmesh-layout-lab` | Desktop layout development tool |
 
-Most whiteboards are optimized for humans only. Most diagram generators are optimized for one-shot output. This project sits in the middle:
+Connect one MCP client to `boardmesh-mcp`. Open the desktop against the same sessions directory, session ID, and runtime URL. The [first-board tutorial](docs/getting-started.html) gives exact commands and tested tool calls.
 
-- you can sketch locally
-- an MCP client can add or edit shapes
-- the GUI live-reloads changes from the MCP side
-- sessions make it possible to keep multiple named boards around without inventing a heavy backend
+## Build from source
 
-## Current UX
+Use Rust 1.95 or newer. Run from the workspace root:
 
-The desktop app now provides:
-
-- a structured sidebar with session, tools, style, and object sections
-- a real tool palette instead of a single dropdown
-- undo / redo / clear actions in the main window
-- a status bar with current mode, object counts, and MCP connectivity
-- a subtle canvas grid so the board feels like a drawing surface instead of an empty panel
-- a canvas-first default layout, with session/objects/inspector/history panels hidden until requested
-- one-shot contextual pane surfacing: the inspector opens the first time a drawing tool becomes active, and the objects pane opens the first time the board gains content
-- an infinite-board camera with wheel zoom, middle-drag pan, and fit/reset shortcuts
-- a local WebSocket runtime bridge so the GUI can subscribe to live scene updates from the MCP server
-
-## Architecture
-
-The app is split into four layers:
-
-1. Desktop GUI
-   `src/bin/boardmesh.rs`
-   A wxDragon desktop app for local editing, selection, and visual feedback.
-
-2. CLI
-   `src/bin/boardmesh-cli.rs`
-   A terminal-friendly client for the runtime command surface. It can invoke scene, session, render, and mutation commands without going through MCP.
-
-3. MCP server
-   `src/bin/boardmesh-mcp.rs`
-   A stdio server exposing Boardmesh operations like adding shapes, switching sessions, exporting scenes, and rendering PNGs.
-
-4. Shared core and runtime
-   `src/lib.rs`, `src/scene.rs`, `src/storage.rs`, `src/session.rs`, `src/render.rs`, `src/runtime.rs`, `src/runtime_client.rs`
-   The scene model, JSON storage, session manifests, runtime method catalog, and websocket client helpers used by the GUI, CLI, and MCP server.
-
-There is no database and no web backend. The source of truth is the scene/session files on disk.
-The live coordination path between the GUI and `boardmesh-mcp` now uses a local WebSocket runtime (`ws://127.0.0.1:9467` by default) with JSON-RPC messages. Files remain the persistence layer.
-
-Undo/redo tracks local edits. A new external board edit clears local history; delayed notifications from an already acknowledged local edit do not.
-
-## Session-First Workflow
-
-The preferred workflow is named sessions.
-
-Each session has:
-
-- `boardmesh-sessions/<session_id>.json`
-- `boardmesh-sessions/<session_id>.manifest.json`
-
-The scene file stores objects. The manifest stores metadata such as attached GUI windows and MCP server heartbeats.
-
-By default, the installed setup uses the named session:
-
-`default`
-
-Raw scene-file mode still exists for compatibility, but sessions are the primary model.
-
-## Quick Start
-
-### Build
-
-```bash
-cargo build --bin boardmesh-cli
-cargo build --bin boardmesh-mcp
-cargo build --bin boardmesh --features gui
+```sh
+cargo build --locked -p boardmesh --bin boardmesh-cli --bin boardmesh-mcp
+cargo test --locked -p boardmesh
 ```
 
-## CI And Release Artifacts
+For the desktop, install the [native development dependencies](docs/install-and-verification.html), then build:
 
-Boardmesh has a product-specific GitHub Actions workflow at
-`.github/workflows/boardmesh-build.yml`.
-
-The workflow:
-
-- runs Boardmesh package tests through the reusable monorepo Rust product workflow
-- builds the non-GUI wrappers `boardmesh-cli` and `boardmesh-mcp`
-- builds the GUI binaries `boardmesh` and `boardmesh-layout-lab` with the `gui` feature
-- uploads a release-friendly `boardmesh-linux-x86_64` artifact package containing the current Boardmesh binary names
-
-The monorepo workflow uploads CI artifacts. The standalone repository has its own workflow that also publishes immutable snapshot prereleases. Both build the GUI and operator binaries; the standalone workflow verifies actual MCP/CLI and desktop interaction before publishing. Snapshot tags identify a source commit and do not change the product's SemVer version.
-
-### Run the GUI
-
-```bash
-cargo run --bin boardmesh --features gui -- --session default
+```sh
+RUSTFLAGS='-C link-arg=-lSDL' cargo build --locked -p boardmesh --features gui
 ```
 
-If you omit `--session` and do not force a raw scene file, the app opens a session picker.
+Generate and validate API documentation against actual binaries:
 
-Useful flags:
-
-```bash
-cargo run --bin boardmesh --features gui -- --session default --runtime-url ws://127.0.0.1:9467
-cargo run --bin boardmesh --features gui -- --session default --no-runtime
+```sh
+python3 opt/boardmesh/scripts/generate_tool_reference.py --bin-dir target/debug
+python3 opt/boardmesh/scripts/verify_documentation.py --bin-dir target/debug
+python3 opt/boardmesh/scripts/verify_agent.py --bin-dir target/debug \
+  --gui-binary target/debug/boardmesh
 ```
 
-### Run the layout lab
+The desktop verifier requires Xvfb, xdotool, ImageMagick, and Python Xlib. It tests real MCP and CLI calls, GUI drawing, live updates, undo/redo, persistence, and PNG export in isolated temporary sessions.
 
-```bash
-cargo run --bin boardmesh-layout-lab --features gui
-```
+## Compatibility and current limits
 
-Use this when you want to test menu-driven show/hide, toolbar docking, and layout state synchronization without involving scene files, drawing tools, or MCP traffic.
+Existing boards retain their JSON format, IDs, and endpoint bindings. A guarded `ortho-router` adapter improves blocked orthogonal connectors. Clear routes, straight and spline connectors, ordinary lines, and unsupported cases retain their existing geometry. [Routing details and comparison evidence](docs/routing.html) describe the bounds and fallbacks.
 
-### Run the MCP server
+The release advertises 40 MCP tools and 45 runtime methods. Some richer scene-model objects have no dedicated MCP creation tool. Undo belongs to the local desktop window. There is no browser editor, hosted collaboration service, or automatic WorkMesh task synchronization. Optional toolbar icons use fallback shapes when the original source assets are unavailable.
 
-```bash
-cargo run --bin boardmesh-mcp -- --session default
-```
+## Source and distribution
 
-By default, the MCP server also starts the local runtime WebSocket bridge on `127.0.0.1:9467`.
+Authoritative development lives in the Mesh monorepo under `opt/boardmesh`. The [public standalone repository](https://github.com/luis-lobo-ar/boardmesh) receives generated snapshots of Boardmesh and its required shared libraries. It builds without private Mesh access or another Mesh product. The internal `mesh-id` helper remains unpublished and is included as source.
 
-Useful flags:
+The standalone GitHub workflow tests the product and shared libraries, builds four Linux binaries, and tests an extracted release before publishing an immutable snapshot. A separate workflow publishes these HTML manuals to GitHub Pages. [Development](docs/development.html) explains source ownership, provenance, and contribution boundaries.
 
-```bash
-cargo run --bin boardmesh-mcp -- --session default --runtime-addr 127.0.0.1:9467
-cargo run --bin boardmesh-mcp -- --session default --no-runtime-ws
-```
-
-### Run the CLI
-
-```bash
-cargo run --bin boardmesh-cli -- list-methods
-cargo run --bin boardmesh-cli -- get_scene
-cargo run --bin boardmesh-cli -- add_text --json '{"position":"120,120","text":"hello"}'
-cargo run --bin boardmesh-cli -- add_text --json '{"session_id":"default","position":"120,120","text":"hello"}'
-cargo run --bin boardmesh-cli -- session.list
-```
-
-The CLI talks to the local runtime websocket rather than to MCP stdio. It supports the full runtime method list, which includes:
-
-- runtime-native methods like `session.attach`, `session.list`, `session.switch`, `scene.get`, and `scene.replace`
-- the Boardmesh command surface mirrored from MCP, such as `get_universe`, `get_selection_context`, `create_canvas`, `set_active_canvas`, `select_canvases`, `assign_object_to_canvas`, `clear_object_canvas_assignment`, `add_line`, `add_text`, `duplicate_object`, `set_object_visibility`, `set_object_locked`, `move_object_to_front`, `render_scene_png`, `switch_session`, `save_scene_as`, and `get_tool_help`
-
-Runtime session scope is per websocket client. For one-shot CLI calls, pass `"session_id"` in the JSON payload when the method should target a specific named session; long-lived clients can also use `session.attach` or `session.switch` on their own connection before sending follow-up scene updates.
-
-Useful flags:
-
-```bash
-cargo run --bin boardmesh-cli -- get_scene --compact
-cargo run --bin boardmesh-cli -- add_circle --json-file ./circle.json
-cargo run --bin boardmesh-cli -- scene.replace --json '{"session_id":"default","scene":{"objects":[],"selected_object_ids":[]}}'
-cargo run --bin boardmesh-cli -- session.list --runtime-url ws://127.0.0.1:9467
-```
-
-## Desktop Usage
-
-Supported tools:
-
-- Select
-- Pen
-- Line
-- Rectangle
-- Circle
-- Triangle
-- Polygon
-- Fill
-
-Useful shortcuts:
-
-- `Delete` / `Backspace`: delete selected objects
-- `Ctrl+Z`: undo
-- `Ctrl+Shift+Z` or `Ctrl+Y`: redo
-- Mouse wheel: zoom around the cursor
-- Middle drag: pan the board
-- `Ctrl+0`: reset the camera
-- `Ctrl+1`: fit the board content
-- `Ctrl+2`: fit the current selection
-- `Enter`: finish polygon / 3-point triangle
-- `Esc`: cancel the active draft
-
-Behavior notes:
-
-- the object list reflects current objects in the scene file
-- checking items selects them in the scene
-- Ctrl-click on the canvas toggles object selection
-- the GUI polls the scene file and reloads changes written by MCP
-
-## Scene Modes
-
-### Named session mode
-
-Recommended.
-
-```bash
-cargo run --bin boardmesh --features gui -- --session review-board
-cargo run --bin boardmesh-mcp -- --session review-board
-```
-
-### Raw scene-file mode
-
-Compatibility path for direct file workflows.
-
-```bash
-cargo run --bin boardmesh --features gui -- --scene ./boardmesh-scene.json
-cargo run --bin boardmesh-mcp -- --scene ./boardmesh-scene.json
-```
-
-## MCP Usage
-
-The MCP server exposes tools for:
-
-- session management
-- scene import/export
-- drawing primitives
-- selection, semantic selection context, and deletion
-- PNG rendering
-
-Common workflow:
-
-1. `list_sessions`
-2. `create_session` or `switch_session`
-3. inspect the active selection with `get_selection_context` when an agent needs to resolve "this" into object kind, canvas membership, connected objects, and nearby context
-4. draw with `add_rectangle`, `add_text`, `add_line`, etc.
-5. export with `render_scene_png` or `export_scene_json`
-
-If an agent needs exact payload examples, use `get_tool_help` or `get_api_docs`.
-
-## Install In Codex
-
-Fast path:
-
-```bash
-RUSTFLAGS='-C link-arg=-lSDL' bash opt/boardmesh/install.sh
-```
-
-What `install.sh` does:
-
-- builds the release desktop and MCP binaries
-- installs them under `~/.local/share/boardmesh`
-- creates the target scene file on first install if it does not exist yet
-- registers the MCP server in Codex
-- optionally stops installed GUI/MCP processes before replacing binaries and relaunches previously running installed GUI windows
-
-Run this source-install command from the workspace root after installing the Linux GUI build dependencies in the installation guide. New installations start with an empty board; reinstalling preserves existing board files. CLI and layout-lab binaries are available separately in the release archive.
-
-Important flags:
-
-- `--session ID`: install against a named session
-- `--scene PATH`: force raw scene mode
-- `--no-stop`: leave existing processes running
-- `--no-restart-gui`: do not relaunch GUI windows after install
-- `--no-codex`: skip Codex registration
-
-Manual Codex registration example:
-
-```bash
-codex mcp add boardmesh -- \
-  /home/luis/dev/luislobo/mesh/target/release/boardmesh-mcp \
-  --session default
-```
-
-## Development
-
-Product planning docs:
-
-- `docs/PRD-001-infinite-universe-and-graph-canvases.html`
-
-### Format
-
-```bash
-cargo fmt
-```
-
-### Tests
-
-```bash
-cargo test
-```
-
-### GUI smoke test
-
-```bash
-python3 opt/boardmesh/scripts/smoke_gui.py --scenario draw
-```
-
-The smoke script builds the GUI, launches it under a virtual display, performs scripted interactions, and writes a screenshot artifact.
-
-From the workspace root, verify an extracted release without compiling it:
-
-```bash
-python3 opt/boardmesh/scripts/verify_agent.py \
-  --bin-dir /absolute/path/boardmesh-linux-x86_64/bin \
-  --gui-binary /absolute/path/boardmesh-linux-x86_64/bin/boardmesh
-```
-
-This exercises actual MCP tools and CLI calls, live GUI updates, human drawing, undo/redo, separate sessions, JSON/PNG exports, and persistence after reopening and restarting. It creates isolated test sessions and keeps JSON transcripts and screenshots in the reported temporary directory. The GUI check requires Xvfb, xdotool, ImageMagick, and Python Xlib. See the installation guide for exact commands and test scope.
-
-### Layout lab
-
-The layout lab exists specifically for AUI and menu/toolbar debugging.
-
-It keeps only:
-
-- the menu bar and dock-position commands
-- three toolbars
-- three side panes
-- a center placeholder panel
-- a bottom event log
-
-That makes it the safest place to reproduce docking and visibility bugs before changing the main Boardmesh window.
-
-## Repository Layout
-
-```text
-src/bin/boardmesh.rs        Desktop GUI entrypoint for `boardmesh`
-src/bin/boardmesh-layout-lab.rs Layout test harness entrypoint for `boardmesh-layout-lab`
-src/bin/boardmesh-mcp.rs    MCP server entrypoint for `boardmesh-mcp`
-src/gui_layout.rs            Shared layout state and actions
-src/scene.rs                 Scene model and object logic
-src/storage.rs               Scene/session storage helpers
-src/session.rs               Session manifests and runtime tracking
-src/render.rs                PNG rendering
-scripts/smoke_gui.py         GUI smoke test
-boardmesh-sessions/          Named session files
-boardmesh-scene.json         Default raw-scene file
-```
-
-## Compatibility Notes
-
-- Sessions are the preferred model.
-- Raw scene files remain supported for compatibility.
-- Existing MCP clients holding an old stdio process may need to be restarted after installing a new binary.
-- Use `boardmesh`, `boardmesh-layout-lab`, `boardmesh-mcp`, and `boardmesh-cli`.
-- `cargo test -p boardmesh` exercises the shared crate and its wrapper binaries.
-
-## Version
-
-Current package version: `0.2.0`
+Mesh code is MIT-licensed. Preserve the third-party notices distributed with source and binaries.

@@ -106,6 +106,7 @@ dependencies = [
  "image",
  "mesh-graph",
  "mesh-id",
+ "ortho-router",
  "rmcp",
  "schemars",
  "serde",
@@ -1138,6 +1139,12 @@ dependencies = [
  "pkg-config",
  "vcpkg",
 ]
+
+[[package]]
+name = "ortho-router"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "49b1ed46e70b98c43477251d1bad39863082d10dd375dd264a96cbe97294ca5d"
 
 [[package]]
 name = "paste"

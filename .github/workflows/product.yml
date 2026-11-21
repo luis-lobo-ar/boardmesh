@@ -53,6 +53,7 @@ jobs:
           mkdir standalone-check
           tar -xzf dist/boardmesh-linux-x86_64.tar.gz -C standalone-check
           python3 opt/boardmesh/scripts/verify_agent.py --bin-dir standalone-check/boardmesh-linux-x86_64/bin --gui-binary standalone-check/boardmesh-linux-x86_64/bin/boardmesh --evidence-dir dist/boardmesh-verification
+          python3 opt/boardmesh/scripts/verify_documentation.py --bin-dir standalone-check/boardmesh-linux-x86_64/bin
       - uses: actions/upload-artifact@v4
         if: always()
         with:

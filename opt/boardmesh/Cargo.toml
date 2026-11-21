@@ -2,6 +2,7 @@
 name = "boardmesh"
 version = "0.2.0"
 edition = "2024"
+rust-version = "1.95"
 
 [features]
 default = []
@@ -21,6 +22,7 @@ tokio-tungstenite = "0.23"
 tungstenite = "0.23"
 mesh-id = { path = "../../lib/mesh-id" }
 mesh-graph = { path = "../../lib/mesh-graph" }
+ortho-router = "=0.1.1"
 uuid = { version = "1.18.1", features = ["serde", "v4"] }
 wxdragon = { version = "0.9.13", optional = true }
 

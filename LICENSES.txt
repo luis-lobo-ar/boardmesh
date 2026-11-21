@@ -1,6 +1,16 @@
 Third-Party Notices
 ===================
 
+ortho-router 0.1.1 (Boardmesh obstacle-aware connector routing)
+------------------------------------------------------------
+Source: https://github.com/quazardous/egui-pop
+Registry: https://crates.io/crates/ortho-router/0.1.1
+License: MIT OR Apache-2.0; distributed using the MIT option.
+Copyright (c) 2026 The egui-pop authors
+Used as a Cargo dependency; no upstream implementation is copied into Mesh.
+Standalone binary archives retain the dependency's original LICENSE-MIT and
+LICENSE-APACHE files in the Cargo third-party license archive.
+
 wxWidgets 3.3.2 (downloaded during Boardmesh GUI build)
 -----------------------------------------------------
 Source: https://github.com/wxWidgets/wxWidgets/releases/tag/v3.3.2

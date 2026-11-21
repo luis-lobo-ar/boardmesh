@@ -1,12 +1,18 @@
-# Boardmesh Docs
+# Boardmesh documentation
 
-- [Installation and end-to-end verification](./install-and-verification.html)
-- [PRD-001 Infinite Universe and Graph Canvases](./PRD-001-infinite-universe-and-graph-canvases.html)
-- [PRD-002 Semantic Links and Diagram Endpoints](./PRD-002-semantic-links-and-diagram-endpoints.html)
-- [Link Marker Catalog](./link-marker-catalog.html)
-- [GUI prototype: BoardMesh Canvas Workspace](mockups/boardmesh-canvas-workspace.html)
+Human-facing documentation: [documentation home](README.html).
 
-Notes:
+- [Overview and benefits](overview.html)
+- [First shared board](getting-started.html)
+- [People and agents](people-and-agents.html)
+- [Use cases](use-cases.html)
+- [Desktop controls](desktop.html)
+- [Agent guide](agent-guide.html)
+- [MCP tool reference](tool-reference.html) and [machine-readable schemas](tool-reference.json)
+- [Files and runtime](data-and-runtime.html)
+- [Connector routing and compatibility](routing.html)
+- [Install and verify](install-and-verification.html)
+- [Troubleshooting](troubleshooting.html)
+- [Development](development.html)
 
-- `Boardmesh` is the product and crate name.
-- Ecosystem-wide migration and architecture audits live separately under `share/doc/architecture/` in the Mesh monorepo.
+Design proposals and prototypes are linked separately from the documentation home.

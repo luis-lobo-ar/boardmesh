@@ -155,6 +155,8 @@ def verify_gui(binary, server, session_root, runtime, evidence, checks):
         check(True, 'GUI redo propagates to the agent', checks)
         subprocess.run(['import', '-display', display_name, '-window', 'root',
                         str(evidence / 'gui-human-and-agent.png')], check=True)
+        subprocess.run(['import', '-display', display_name, '-window', window,
+                        str(evidence / 'gui-window.png')], check=True)
         saved = server.tool('get_scene')
         close(window)
         reopen_offset = log_path.stat().st_size

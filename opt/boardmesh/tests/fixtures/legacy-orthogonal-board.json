@@ -1,0 +1,143 @@
+{
+  "active_canvas_id": null,
+  "background": {
+    "a": 255,
+    "b": 249,
+    "g": 250,
+    "r": 250
+  },
+  "canvases": [],
+  "memberships": [],
+  "scene": {
+    "background": {
+      "a": 255,
+      "b": 249,
+      "g": 250,
+      "r": 250
+    },
+    "objects": [
+      {
+        "fill": null,
+        "id": "existing-left",
+        "kind": {
+          "rect": {
+            "height": 60,
+            "width": 100,
+            "x": 0,
+            "y": 0
+          },
+          "type": "rectangle"
+        },
+        "locked": false,
+        "stroke": {
+          "color": {
+            "a": 255,
+            "b": 42,
+            "g": 23,
+            "r": 15
+          },
+          "width": 2
+        },
+        "visible": true
+      },
+      {
+        "fill": null,
+        "id": "existing-right",
+        "kind": {
+          "rect": {
+            "height": 60,
+            "width": 100,
+            "x": 400,
+            "y": 0
+          },
+          "type": "rectangle"
+        },
+        "locked": false,
+        "stroke": {
+          "color": {
+            "a": 255,
+            "b": 42,
+            "g": 23,
+            "r": 15
+          },
+          "width": 2
+        },
+        "visible": true
+      },
+      {
+        "fill": null,
+        "id": "existing-blocker",
+        "kind": {
+          "rect": {
+            "height": 140,
+            "width": 100,
+            "x": 200,
+            "y": -40
+          },
+          "type": "rectangle"
+        },
+        "locked": false,
+        "stroke": {
+          "color": {
+            "a": 255,
+            "b": 42,
+            "g": 23,
+            "r": 15
+          },
+          "width": 2
+        },
+        "visible": true
+      },
+      {
+        "fill": null,
+        "id": "existing-connection",
+        "kind": {
+          "connector": {
+            "end": {
+              "anchor": "west",
+              "object_id": "existing-right",
+              "offset": {
+                "x": 0,
+                "y": 0
+              },
+              "type": "bound"
+            },
+            "kind": "orthogonal",
+            "start": {
+              "anchor": "east",
+              "object_id": "existing-left",
+              "offset": {
+                "x": 0,
+                "y": 0
+              },
+              "type": "bound"
+            }
+          },
+          "type": "connector"
+        },
+        "locked": false,
+        "stroke": {
+          "color": {
+            "a": 255,
+            "b": 42,
+            "g": 23,
+            "r": 15
+          },
+          "width": 2
+        },
+        "visible": true
+      }
+    ],
+    "selected_object_ids": [
+      "existing-connection"
+    ],
+    "version": 1
+  },
+  "selected_canvas_ids": [],
+  "version": 1,
+  "viewport": {
+    "pan_x": 0.0,
+    "pan_y": 0.0,
+    "zoom": 1.0
+  }
+}

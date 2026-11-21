@@ -818,12 +818,32 @@ impl SceneDocument {
             end: connector.end.clone().into(),
             kind: connector.kind.into(),
         };
-        route_graph_connector(&graph_connector, |object_id| {
+        let path = route_graph_connector(&graph_connector, |object_id| {
             self.objects
                 .iter()
                 .find(|item| item.id == object_id)
                 .map(|object| self.object_bounds(object).into())
-        })
+        })?;
+        let obstacles = self
+            .objects
+            .iter()
+            .filter(|object| {
+                object.visible
+                    && matches!(
+                        object.kind,
+                        ObjectKind::Rectangle { .. }
+                            | ObjectKind::Circle { .. }
+                            | ObjectKind::Triangle { .. }
+                            | ObjectKind::Polygon { .. }
+                            | ObjectKind::Text { .. }
+                    )
+            })
+            .map(|object| self.object_bounds(object).into());
+        Some(crate::routing::avoid_obstacles(
+            &graph_connector,
+            path,
+            obstacles,
+        ))
     }
 
     fn resolve_connector_path(&self, connector: &ConnectorSpec) -> Option<ResolvedConnectorPath> {

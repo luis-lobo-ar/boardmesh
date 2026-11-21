@@ -4,6 +4,7 @@ pub mod gui_layout;
 pub mod history;
 pub mod ports;
 pub mod render;
+mod routing;
 pub mod runtime;
 pub mod runtime_client;
 pub mod scene;

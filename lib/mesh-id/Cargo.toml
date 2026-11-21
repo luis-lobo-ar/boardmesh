@@ -3,6 +3,9 @@ name = "mesh-id"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+description = "Shared ULID formatting and correlation identifier conventions for Mesh applications"
+readme = "README.md"
+publish = false
 
 [dependencies]
 ulid.workspace = true

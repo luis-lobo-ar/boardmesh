@@ -1,0 +1,18 @@
+[
+  {"tool":"create_session","arguments":{"session_id":"first-board","make_active":true}},
+  {"tool":"create_canvas","arguments":{"name":"Build and review","rect":[40,40,860,440]},"save_id":"canvas"},
+  {"tool":"add_rectangle","arguments":{"rect":[100,140,220,120],"fill":{"r":219,"g":234,"b":254}},"save_id":"build"},
+  {"tool":"add_text","arguments":{"position":[135,185],"text":"Build"}},
+  {"tool":"add_rectangle","arguments":{"rect":[540,140,220,120],"fill":{"r":220,"g":252,"b":231}},"save_id":"review"},
+  {"tool":"add_text","arguments":{"position":[575,185],"text":"Review"}},
+  {"tool":"add_line","arguments":{"start":[320,200],"end":[540,200]}},
+  {"tool":"assign_object_to_canvas","arguments":{"object_id":"${build}","canvas_id":"${canvas}"}},
+  {"tool":"assign_object_to_canvas","arguments":{"object_id":"${review}","canvas_id":"${canvas}"}},
+  {"tool":"select_objects","arguments":{"object_ids":["${build}"]}},
+  {"tool":"get_selection_context","arguments":{}},
+  {"tool":"fill_object","arguments":{"object_id":"${build}","fill":{"r":254,"g":240,"b":138}}},
+  {"tool":"get_scene","arguments":{}},
+  {"tool":"export_scene_json","arguments":{}},
+  {"tool":"render_scene_png","arguments":{"path":"${output_dir}/first-board.png","padding":24}},
+  {"tool":"get_universe","arguments":{}}
+]

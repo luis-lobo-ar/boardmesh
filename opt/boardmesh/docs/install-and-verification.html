@@ -21,7 +21,7 @@ export PATH="$PWD/boardmesh-linux-x86_64/bin:$PATH"</code></pre>
 boardmesh-cli get_scene --json '{"session_id":"default"}'</code></pre>
 <p>Use one runtime authority per board directory. The GUI can also run alone with <code>--no-runtime</code>. Boardmesh is a desktop application; the WebSocket bridge is not a browser editor or a public web service. MCP help exits without creating a board; unknown arguments and options missing values fail before startup.</p>
 <h2>Build from the standalone source</h2>
-<p>Clone the public repository and run commands from its root. Non-GUI binaries need the Rust toolchain and normal Rust dependencies:</p>
+<p>Clone the public repository and run commands from its root. Source builds require Rust 1.95 or newer and normal Rust dependencies. Check <code>rustc --version</code> before building:</p>
 <pre><code>cargo build --locked --release -p boardmesh --bin boardmesh-cli --bin boardmesh-mcp
 cargo test --locked -p boardmesh</code></pre>
 <p>For the desktop on Ubuntu, install build dependencies first:</p>
@@ -43,5 +43,6 @@ python3 opt/boardmesh/scripts/verify_agent.py \
 <pre><code>cargo test --locked -p boardmesh --test mcp_startup
 python3 -m unittest discover -s opt/boardmesh/scripts -p 'test_*.py'</code></pre>
 <p>These checks cover the local single-runtime workflow. They do not qualify remote multi-user operation or production high availability.</p>
+<p><a href="getting-started.html">First shared board</a> · <a href="people-and-agents.html">People and agents</a> · <a href="routing.html">Connector routing</a></p>
 <p><a href="../README.html">Boardmesh manual</a> · <a href="README.html">Documentation index</a></p>
 </body></html>

@@ -1,1 +1,1 @@
-Linux x86_64 snapshot of boardmesh from Mesh commit 7d67453f89c442ae6ee78d31ef9751eddf3aa389. This is a prerelease distribution snapshot, not a new product SemVer release. See mesh-export.json for source provenance and notices.
+Linux x86_64 snapshot of boardmesh from Mesh commit da7d64f83b5cfef480b61c7f795c18bdd2076ee2. This is a prerelease distribution snapshot, not a new product SemVer release. See mesh-export.json for source provenance and notices.

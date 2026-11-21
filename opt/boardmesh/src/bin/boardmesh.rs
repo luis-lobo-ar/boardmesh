@@ -23,7 +23,6 @@ use std::sync::{Mutex, OnceLock, mpsc};
 use std::thread;
 use std::time::SystemTime;
 use tungstenite::{Message as WsMessage, connect as ws_connect};
-use uuid::Uuid;
 use wxdragon::menus::menuitem::{ID_ABOUT, ID_EXIT, ItemKind as MenuItemKind};
 use wxdragon::prelude::*;
 
@@ -5780,6 +5779,7 @@ fn mouse_command_multi_select_active(event: &WindowEventData) -> bool {
 mod tests {
     use super::*;
     use boardmesh::{TextObject, load_scene};
+    use uuid::Uuid;
 
     fn sample_state(active_tool: Tool) -> BoardmeshState {
         let mut state = BoardmeshState::new(
