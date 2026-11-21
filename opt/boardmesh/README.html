@@ -233,9 +233,6 @@
   </style>
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">Boardmesh</h1>
-</header>
 <h1 id="boardmesh">Boardmesh</h1>
 <p><code>Boardmesh</code> ships a local-first board built for human +
 agent collaboration.</p>
@@ -262,13 +259,16 @@ sessions are named JSON files plus manifests, and the GUI and MCP server
 both operate on the same storage model. Raw scene-only JSON still loads
 and migrates into the newer universe/canvas document shape at the
 storage layer.</p>
-<p>For ecosystem-wide deployment and filesystem guidance, see <a
-href="../../share/doc/architecture/agent-operating-environment.html">../../share/doc/architecture/agent-operating-environment.html</a>.
-Boardmesh remains local-first; only its non-GUI surfaces are reasonable
-container candidates, and those are still single-authority over the
-files they own. For shared room, work, deployment, and agent references
-around Boardmesh sessions, canvases, and objects, see <a
-href="../../share/doc/architecture/cross-product-contracts.html">../../share/doc/architecture/cross-product-contracts.html</a>.</p>
+<p>Boardmesh runs independently with its included shared libraries. It
+does not require WorkMesh, AgentMesh, Telegram, a database, or another
+Mesh service. The GUI and MCP server can share one local runtime; their
+board files remain local to that installation.</p>
+<p>Read the <a href="docs/install-and-verification.html">installation
+and verification guide</a> for standalone downloads, native GUI
+dependencies, explicit data paths, and a repeatable human/agent test.
+Ecosystem deployment and cross-product references are maintained
+separately in the Mesh monorepo under
+<code>share/doc/architecture/</code>.</p>
 <h2 id="why-this-exists">Why This Exists</h2>
 <p>Most whiteboards are optimized for humans only. Most diagram
 generators are optimized for one-shot output. This project sits in the
@@ -358,8 +358,12 @@ product workflow</li>
 <li>uploads a release-friendly <code>boardmesh-linux-x86_64</code>
 artifact package containing the current Boardmesh binary names</li>
 </ul>
-<p>The workflow does not publish releases, deploy Boardmesh, or depend
-on removed legacy compatibility paths.</p>
+<p>The monorepo workflow uploads CI artifacts. The standalone repository
+has its own workflow that also publishes immutable snapshot prereleases.
+Both build the GUI and operator binaries; the standalone workflow
+verifies actual MCP/CLI and desktop interaction before publishing.
+Snapshot tags identify a source commit and do not change the product’s
+SemVer version.</p>
 <h3 id="run-the-gui">Run the GUI</h3>
 <div class="sourceCode" id="cb2"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> run <span class="at">--bin</span> boardmesh <span class="at">--features</span> gui <span class="at">--</span> <span class="at">--session</span> default</span></code></pre></div>
@@ -477,7 +481,7 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href=
 <li><code>list_sessions</code></li>
 <li><code>create_session</code> or <code>switch_session</code></li>
 <li>inspect the active selection with <code>get_selection_context</code>
-when an agent needs to resolve "this" into object kind, canvas
+when an agent needs to resolve “this” into object kind, canvas
 membership, connected objects, and nearby context</li>
 <li>draw with <code>add_rectangle</code>, <code>add_text</code>,
 <code>add_line</code>, etc.</li>
@@ -489,7 +493,7 @@ membership, connected objects, and nearby context</li>
 <h2 id="install-in-codex">Install In Codex</h2>
 <p>Fast path:</p>
 <div class="sourceCode" id="cb11"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./install.sh</span></span></code></pre></div>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="va">RUSTFLAGS</span><span class="op">=</span><span class="st">&#39;-C link-arg=-lSDL&#39;</span> <span class="fu">bash</span> opt/boardmesh/install.sh</span></code></pre></div>
 <p>What <code>install.sh</code> does:</p>
 <ul>
 <li>builds the release desktop and MCP binaries</li>
@@ -500,6 +504,11 @@ yet</li>
 <li>optionally stops installed GUI/MCP processes before replacing
 binaries and relaunches previously running installed GUI windows</li>
 </ul>
+<p>Run this source-install command from the workspace root after
+installing the Linux GUI build dependencies in the installation guide.
+New installations start with an empty board; reinstalling preserves
+existing board files. CLI and layout-lab binaries are available
+separately in the release archive.</p>
 <p>Important flags:</p>
 <ul>
 <li><code>--session ID</code>: install against a named session</li>
@@ -527,9 +536,22 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href=
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cargo</span> test</span></code></pre></div>
 <h3 id="gui-smoke-test">GUI smoke test</h3>
 <div class="sourceCode" id="cb15"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> scripts/smoke_gui.py <span class="at">--scenario</span> draw</span></code></pre></div>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> opt/boardmesh/scripts/smoke_gui.py <span class="at">--scenario</span> draw</span></code></pre></div>
 <p>The smoke script builds the GUI, launches it under a virtual display,
 performs scripted interactions, and writes a screenshot artifact.</p>
+<p>From the workspace root, verify an extracted release without
+compiling it:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> opt/boardmesh/scripts/verify_agent.py <span class="dt">\</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--bin-dir</span> /absolute/path/boardmesh-linux-x86_64/bin <span class="dt">\</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--gui-binary</span> /absolute/path/boardmesh-linux-x86_64/bin/boardmesh</span></code></pre></div>
+<p>This exercises actual MCP tools and CLI calls, live GUI updates,
+human drawing, undo/redo, separate sessions, JSON/PNG exports, and
+persistence after reopening and restarting. It creates isolated test
+sessions and keeps JSON transcripts and screenshots in the reported
+temporary directory. The GUI check requires Xvfb, xdotool, ImageMagick,
+and Python Xlib. See the installation guide for exact commands and test
+scope.</p>
 <h3 id="layout-lab">Layout lab</h3>
 <p>The layout lab exists specifically for AUI and menu/toolbar
 debugging.</p>

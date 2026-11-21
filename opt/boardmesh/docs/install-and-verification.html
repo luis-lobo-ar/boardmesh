@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Install and verify Boardmesh</title>
+<style>body{font:17px/1.6 system-ui,sans-serif;max-width:900px;margin:3rem auto;padding:0 1rem;color:#172033}pre{background:#f2f5f8;padding:1rem;overflow:auto}code{font-size:.9em}a{color:#165ac9}</style>
+<body><h1>Install and verify Boardmesh</h1>
+<p>Boardmesh is a local desktop board with MCP and CLI interfaces. Its <a href="https://github.com/luis-lobo-ar/boardmesh">standalone repository</a> includes the shared libraries it needs. No other Mesh application, account, database, or running service is required. Development stays in the Mesh monorepo; public releases are generated snapshots.</p>
+<h2>Download Linux binaries</h2>
+<p>Download <code>boardmesh-linux-x86_64.tar.gz</code> and its matching <code>.sha256</code> file from the same <a href="https://github.com/luis-lobo-ar/boardmesh/releases">snapshot release</a>. Verify before extracting:</p>
+<pre><code>sha256sum --check boardmesh-linux-x86_64.tar.gz.sha256
+tar -xzf boardmesh-linux-x86_64.tar.gz
+export PATH="$PWD/boardmesh-linux-x86_64/bin:$PATH"</code></pre>
+<p>The archive contains <code>boardmesh</code>, <code>boardmesh-mcp</code>, <code>boardmesh-cli</code>, and the optional <code>boardmesh-layout-lab</code>. It includes source provenance and license notices. GUI executables require Linux GUI libraries, including GTK3, SDL 1.2, and OpenGL, plus a graphical display. These snapshots build on Ubuntu 24.04 for x86_64. Other platforms are not qualified by this workflow.</p>
+<p>Snapshot releases are prereleases named for a Git commit. The package remains version 0.2.0. Optional desktop icons currently fall back to built-in shapes when the source checkout is absent; portable icon resources remain separate future work.</p>
+<h2>Use one explicit board directory</h2>
+<p>Choose a data directory outside the extracted release, so replacing binaries preserves boards. Start the MCP server through an MCP client with these executable arguments:</p>
+<pre><code>/absolute/path/boardmesh-linux-x86_64/bin/boardmesh-mcp \
+  --sessions-dir /absolute/path/my-boards --session default</code></pre>
+<p>The MCP client must initialize and keep the stdio connection open. This server also starts the local WebSocket bridge at <code>127.0.0.1:9467</code>. Open the GUI against that same server and directory:</p>
+<pre><code>boardmesh --sessions-dir /absolute/path/my-boards --session default \
+  --runtime-url ws://127.0.0.1:9467
+boardmesh-cli get_scene --json '{"session_id":"default"}'</code></pre>
+<p>Use one runtime authority per board directory. The GUI can also run alone with <code>--no-runtime</code>. Boardmesh is a desktop application; the WebSocket bridge is not a browser editor or a public web service. MCP help exits without creating a board; unknown arguments and options missing values fail before startup.</p>
+<h2>Build from the standalone source</h2>
+<p>Clone the public repository and run commands from its root. Non-GUI binaries need the Rust toolchain and normal Rust dependencies:</p>
+<pre><code>cargo build --locked --release -p boardmesh --bin boardmesh-cli --bin boardmesh-mcp
+cargo test --locked -p boardmesh</code></pre>
+<p>For the desktop on Ubuntu, install build dependencies first:</p>
+<pre><code>sudo apt-get install build-essential clang cmake libclang-dev \
+  libgl1-mesa-dev libglu1-mesa-dev libgtk-3-dev libsdl1.2-dev libxtst-dev pkg-config
+RUSTFLAGS='-C link-arg=-lSDL' cargo build --locked --release -p boardmesh --features gui</code></pre>
+<p>Optional source installation of GUI and MCP, without changing your MCP client configuration:</p>
+<pre><code>RUSTFLAGS='-C link-arg=-lSDL' bash opt/boardmesh/install.sh --no-codex</code></pre>
+<p>The installer defaults to <code>~/.local/share/boardmesh</code>. It creates an empty scene only on first installation and preserves existing data. Use <code>--install-root</code> to choose a different location. Omit <code>--no-codex</code> only when you want the installer to replace the existing Boardmesh registration in Codex.</p>
+<h2>Repeat the human and agent test</h2>
+<p>On Ubuntu, GUI automation needs these additional packages:</p>
+<pre><code>sudo apt-get install xvfb xdotool imagemagick python3-xlib
+python3 opt/boardmesh/scripts/verify_agent.py \
+  --bin-dir /absolute/path/boardmesh-linux-x86_64/bin \
+  --gui-binary /absolute/path/boardmesh-linux-x86_64/bin/boardmesh</code></pre>
+<p>The agent harness initializes the real MCP protocol, discovers the tool schemas, draws a diagram, and verifies CLI visibility, canvases, selection context, malformed-input rejection, locking, visibility, separate sessions, and JSON/PNG export. The optional GUI check opens the same board under an isolated Xvfb display, observes a live agent edit, draws a human stroke, verifies undo/redo through MCP, closes and reopens the window, and exports the combined board. Finally it restarts MCP and checks that the entire saved universe survives.</p>
+<p>Omit <code>--gui-binary</code> for the headless MCP/CLI check. The harness starts its own temporary runtime and named sessions, prints an evidence directory, and writes <code>result.json</code>, JSON-RPC transcripts, exports, GUI logs and screenshots. It does not edit your normal boards or require a model-provider account. A coding agent can run the harness and independently inspect the resulting board. Semantic links exist in the library model, but <code>add_link</code> and <code>add_connector</code> are not advertised MCP tools; the test uses the supported drawing tools.</p>
+<p>Run the focused startup and installer regressions from the workspace root:</p>
+<pre><code>cargo test --locked -p boardmesh --test mcp_startup
+python3 -m unittest discover -s opt/boardmesh/scripts -p 'test_*.py'</code></pre>
+<p>These checks cover the local single-runtime workflow. They do not qualify remote multi-user operation or production high availability.</p>
+<p><a href="../README.html">Boardmesh manual</a> · <a href="README.html">Documentation index</a></p>
+</body></html>

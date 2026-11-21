@@ -4150,37 +4150,36 @@ fn parse_options() -> anyhow::Result<ServerOptions> {
     let mut runtime_addr = Some(DEFAULT_RUNTIME_ADDR.to_string());
     let mut args = std::env::args().skip(1);
     while let Some(argument) = args.next() {
-        if argument == "--sessions-dir" {
-            if let Some(path) = args.next() {
-                session_root = PathBuf::from(path);
+        match argument.as_str() {
+            "--help" | "-h" => {
+                println!(
+                    "Usage: boardmesh-mcp [OPTIONS]\n\n\
+                     --session ID          Open a named board session\n\
+                     --sessions-dir PATH   Directory containing named sessions\n\
+                     --scene PATH          Open a raw scene file\n\
+                     --runtime-addr ADDR   WebSocket listen address (default: {DEFAULT_RUNTIME_ADDR})\n\
+                     --no-runtime-ws       Disable the WebSocket bridge\n\
+                     -h, --help            Show this help"
+                );
+                std::process::exit(0);
             }
-            continue;
-        }
-
-        if argument == "--runtime-addr" {
-            if let Some(addr) = args.next() {
-                runtime_addr = Some(addr);
+            "--sessions-dir" | "--runtime-addr" | "--scene" | "--session" => {
+                let value = args
+                    .next()
+                    .filter(|value| !value.starts_with('-'))
+                    .ok_or_else(|| anyhow::anyhow!("{argument} requires a value"))?;
+                match argument.as_str() {
+                    "--sessions-dir" => session_root = PathBuf::from(value),
+                    "--runtime-addr" => runtime_addr = Some(value),
+                    "--session" => requested_session_id = Some(value),
+                    _ => {
+                        explicit_scene_path = Some(PathBuf::from(value));
+                        requested_session_id = None;
+                    }
+                }
             }
-            continue;
-        }
-
-        if argument == "--no-runtime-ws" {
-            runtime_addr = None;
-            continue;
-        }
-
-        if argument == "--scene" {
-            if let Some(path) = args.next() {
-                explicit_scene_path = Some(PathBuf::from(path));
-                requested_session_id = None;
-            }
-            continue;
-        }
-
-        if argument == "--session"
-            && let Some(session_id) = args.next()
-        {
-            requested_session_id = Some(session_id);
+            "--no-runtime-ws" => runtime_addr = None,
+            _ => anyhow::bail!("unknown argument {argument}; use --help for supported options"),
         }
     }
 

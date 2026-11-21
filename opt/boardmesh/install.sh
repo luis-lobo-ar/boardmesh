@@ -170,7 +170,14 @@ install_binary "$TARGET_DIR/release/boardmesh" "$DESKTOP_BIN"
 
 if [[ ! -f "$SCENE_PATH" ]]; then
   mkdir -p "$(dirname "$SCENE_PATH")"
-  cp "$ROOT_DIR/boardmesh-scene.json" "$SCENE_PATH"
+  cat > "$SCENE_PATH" <<'EOF'
+{
+  "version": 1,
+  "background": {"r": 250, "g": 250, "b": 249, "a": 255},
+  "selected_object_ids": [],
+  "objects": []
+}
+EOF
 fi
 
 if [[ "$REGISTER_CODEX" -eq 1 ]]; then

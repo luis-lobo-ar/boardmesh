@@ -57,13 +57,13 @@ def get_geometry(env, window_id):
 
 
 def scene_object_count(scene_path):
-    with scene_path.open() as handle:
-        return len(json.load(handle)["objects"])
+    return len(load_scene(scene_path)["objects"])
 
 
 def load_scene(scene_path):
     with scene_path.open() as handle:
-        return json.load(handle)
+        document = json.load(handle)
+    return document.get("scene", document)
 
 
 def save_scene(scene_path, scene):
@@ -269,6 +269,8 @@ def load_json(path):
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--binary", type=Path, help="Test an existing desktop binary without building")
+    parser.add_argument("--output-dir", type=Path, help="Keep scene and screenshot evidence here")
     parser.add_argument(
         "--scenario",
         choices=(
@@ -300,10 +302,13 @@ def prepare_named_session(scene_path):
 def main():
     args = parse_args()
 
-    print("building desktop binary...", flush=True)
-    run(["cargo", "build", "--bin", "boardmesh", "--features", "gui"], env=os.environ.copy())
+    desktop_binary = args.binary.resolve() if args.binary else APP
+    if args.binary is None:
+        print("building desktop binary...", flush=True)
+        run(["cargo", "build", "--bin", "boardmesh", "--features", "gui"], env=os.environ.copy())
 
-    temp_dir = Path(tempfile.mkdtemp(prefix="boardmesh-smoke-"))
+    temp_dir = args.output_dir.resolve() if args.output_dir else Path(tempfile.mkdtemp(prefix="boardmesh-smoke-"))
+    temp_dir.mkdir(parents=True, exist_ok=True)
     scene_path = temp_dir / "scene.json"
     sessions_dir = temp_dir / "sessions"
     session_id = "smoke-session"
@@ -347,10 +352,10 @@ def main():
     app = None
     try:
         time.sleep(0.5)
-        command = [str(APP), "--no-runtime", "--scene", str(scene_path)]
+        command = [str(desktop_binary), "--no-runtime", "--scene", str(scene_path)]
         if args.scenario == "session":
             command = [
-                str(APP),
+                str(desktop_binary),
                 "--no-runtime",
                 "--sessions-dir",
                 str(sessions_dir),
@@ -358,10 +363,10 @@ def main():
                 session_id,
             ]
         elif args.scenario == "session-picker":
-            command = [str(APP), "--no-runtime", "--sessions-dir", str(sessions_dir)]
+            command = [str(desktop_binary), "--no-runtime", "--sessions-dir", str(sessions_dir)]
         elif args.scenario == "switch-session":
             command = [
-                str(APP),
+                str(desktop_binary),
                 "--no-runtime",
                 "--sessions-dir",
                 str(sessions_dir),

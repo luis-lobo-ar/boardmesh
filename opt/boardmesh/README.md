@@ -13,8 +13,9 @@ It currently ships four executables:
 
 The project is intentionally simple: board documents are JSON, sessions are named JSON files plus manifests, and the GUI and MCP server both operate on the same storage model. Raw scene-only JSON still loads and migrates into the newer universe/canvas document shape at the storage layer.
 
-For ecosystem-wide deployment and filesystem guidance, see [../../share/doc/architecture/agent-operating-environment.html](../../share/doc/architecture/agent-operating-environment.html). Boardmesh remains local-first; only its non-GUI surfaces are reasonable container candidates, and those are still single-authority over the files they own.
-For shared room, work, deployment, and agent references around Boardmesh sessions, canvases, and objects, see [../../share/doc/architecture/cross-product-contracts.html](../../share/doc/architecture/cross-product-contracts.html).
+Boardmesh runs independently with its included shared libraries. It does not require WorkMesh, AgentMesh, Telegram, a database, or another Mesh service. The GUI and MCP server can share one local runtime; their board files remain local to that installation.
+
+Read the [installation and verification guide](docs/install-and-verification.html) for standalone downloads, native GUI dependencies, explicit data paths, and a repeatable human/agent test. Ecosystem deployment and cross-product references are maintained separately in the Mesh monorepo under `share/doc/architecture/`.
 
 ## Why This Exists
 
@@ -101,7 +102,7 @@ The workflow:
 - builds the GUI binaries `boardmesh` and `boardmesh-layout-lab` with the `gui` feature
 - uploads a release-friendly `boardmesh-linux-x86_64` artifact package containing the current Boardmesh binary names
 
-The workflow does not publish releases, deploy Boardmesh, or depend on removed legacy compatibility paths.
+The monorepo workflow uploads CI artifacts. The standalone repository has its own workflow that also publishes immutable snapshot prereleases. Both build the GUI and operator binaries; the standalone workflow verifies actual MCP/CLI and desktop interaction before publishing. Snapshot tags identify a source commit and do not change the product's SemVer version.
 
 ### Run the GUI
 
@@ -245,7 +246,7 @@ If an agent needs exact payload examples, use `get_tool_help` or `get_api_docs`.
 Fast path:
 
 ```bash
-./install.sh
+RUSTFLAGS='-C link-arg=-lSDL' bash opt/boardmesh/install.sh
 ```
 
 What `install.sh` does:
@@ -255,6 +256,8 @@ What `install.sh` does:
 - creates the target scene file on first install if it does not exist yet
 - registers the MCP server in Codex
 - optionally stops installed GUI/MCP processes before replacing binaries and relaunches previously running installed GUI windows
+
+Run this source-install command from the workspace root after installing the Linux GUI build dependencies in the installation guide. New installations start with an empty board; reinstalling preserves existing board files. CLI and layout-lab binaries are available separately in the release archive.
 
 Important flags:
 
@@ -293,10 +296,20 @@ cargo test
 ### GUI smoke test
 
 ```bash
-python3 scripts/smoke_gui.py --scenario draw
+python3 opt/boardmesh/scripts/smoke_gui.py --scenario draw
 ```
 
 The smoke script builds the GUI, launches it under a virtual display, performs scripted interactions, and writes a screenshot artifact.
+
+From the workspace root, verify an extracted release without compiling it:
+
+```bash
+python3 opt/boardmesh/scripts/verify_agent.py \
+  --bin-dir /absolute/path/boardmesh-linux-x86_64/bin \
+  --gui-binary /absolute/path/boardmesh-linux-x86_64/bin/boardmesh
+```
+
+This exercises actual MCP tools and CLI calls, live GUI updates, human drawing, undo/redo, separate sessions, JSON/PNG exports, and persistence after reopening and restarting. It creates isolated test sessions and keeps JSON transcripts and screenshots in the reported temporary directory. The GUI check requires Xvfb, xdotool, ImageMagick, and Python Xlib. See the installation guide for exact commands and test scope.
 
 ### Layout lab
 
