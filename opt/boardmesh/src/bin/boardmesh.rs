@@ -4,15 +4,15 @@ use boardmesh::scene::{
 };
 use boardmesh::{
     AttachedServer, AttachedWindow, BoardWorkspace, DEFAULT_RUNTIME_URL, JsonRpcNotification,
-    JsonRpcRequest, LayoutAction, LayoutContext, LayoutState, METHOD_SCENE_REPLACE,
-    METHOD_SCENE_UPDATED, METHOD_SESSION_ATTACH, METHOD_SESSION_LIST, METHOD_SESSION_SWITCH,
-    RUNTIME_API_VERSION, RuntimeSceneSnapshot, RuntimeSessionListResult, SERVER_HEARTBEAT_STALE_MS,
-    SESSION_PROTOCOL_VERSION, SceneHistory, SceneReplaceParams, SessionAttachParams,
-    SessionManifest, SessionSwitchParams, ToolbarDock, ViewportState, WindowState,
-    apply_contextual_layout_hints, apply_layout_action, ensure_scene_file, last_modified,
-    list_session_ids, load_scene_if_changed, load_session_manifest, resolve_session_path,
-    runtime_request, save_session_manifest, session_manifest_path, unix_time_ms,
-    validate_session_id,
+    JsonRpcRequest, LayoutAction, LayoutContext, LayoutState, METHOD_SCENE_GET,
+    METHOD_SCENE_REPLACE, METHOD_SCENE_UPDATED, METHOD_SESSION_ATTACH, METHOD_SESSION_LIST,
+    METHOD_SESSION_SWITCH, RUNTIME_API_VERSION, RuntimeSceneSnapshot, RuntimeSessionListResult,
+    SERVER_HEARTBEAT_STALE_MS, SESSION_PROTOCOL_VERSION, SceneHistory, SceneReplaceParams,
+    SessionAttachParams, SessionManifest, SessionSwitchParams, ToolbarDock, ViewportState,
+    WindowState, apply_contextual_layout_hints, apply_layout_action, ensure_scene_file,
+    last_modified, list_session_ids, load_scene_if_changed, load_session_manifest,
+    resolve_session_path, runtime_request, save_session_manifest, session_manifest_path,
+    unix_time_ms, validate_session_id,
 };
 use mesh_graph::GraphPoint;
 use mesh_id::new_prefixed_id;
@@ -2948,6 +2948,23 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         match next_event {
                             Ok(RuntimeEvent::Attached(snapshot))
                             | Ok(RuntimeEvent::SceneUpdated(snapshot)) => {
+                                // Queued notifications can predate an acknowledged local edit.
+                                let snapshot = if let Some(runtime_url) = current_gui_runtime_url() {
+                                    let session_id = state.borrow().session_id.clone();
+                                    match runtime_request::<_, RuntimeSceneSnapshot>(
+                                        &runtime_url,
+                                        METHOD_SCENE_GET,
+                                        serde_json::json!({"session_id": session_id}),
+                                    ) {
+                                        Ok(current) => current,
+                                        Err(error) => {
+                                            log_gui(&format!("runtime refresh failed: {error:#}"));
+                                            continue;
+                                        }
+                                    }
+                                } else {
+                                    snapshot
+                                };
                                 let update_kind;
                                 let log_message;
                                 {

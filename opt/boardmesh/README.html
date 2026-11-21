@@ -325,6 +325,9 @@ scene/session files on disk. The live coordination path between the GUI
 and <code>boardmesh-mcp</code> now uses a local WebSocket runtime
 (<code>ws://127.0.0.1:9467</code> by default) with JSON-RPC messages.
 Files remain the persistence layer.</p>
+<p>Undo/redo tracks local edits. A new external board edit clears local
+history; delayed notifications from an already acknowledged local edit
+do not.</p>
 <h2 id="session-first-workflow">Session-First Workflow</h2>
 <p>The preferred workflow is named sessions.</p>
 <p>Each session has:</p>

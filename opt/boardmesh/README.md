@@ -63,6 +63,8 @@ The app is split into four layers:
 There is no database and no web backend. The source of truth is the scene/session files on disk.
 The live coordination path between the GUI and `boardmesh-mcp` now uses a local WebSocket runtime (`ws://127.0.0.1:9467` by default) with JSON-RPC messages. Files remain the persistence layer.
 
+Undo/redo tracks local edits. A new external board edit clears local history; delayed notifications from an already acknowledged local edit do not.
+
 ## Session-First Workflow
 
 The preferred workflow is named sessions.

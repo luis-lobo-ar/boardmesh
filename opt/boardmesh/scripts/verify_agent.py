@@ -147,6 +147,8 @@ def verify_gui(binary, server, session_root, runtime, evidence, checks):
         wait_until(lambda: len(server.tool('get_scene')['objects']) == count,
                    'GUI undo did not remove the human stroke')
         check(True, 'GUI undo propagates to the agent', checks)
+        # Let queued notifications arrive while redo must remain available.
+        time.sleep(0.5)
         smoke_gui.xtest_key(display_name, 'y', modifiers=('Control_L',))
         wait_until(lambda: len(server.tool('get_scene')['objects']) == count + 1,
                    'GUI redo did not restore the human stroke')

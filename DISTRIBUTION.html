@@ -15,7 +15,7 @@ Product source and manuals: [opt/boardmesh](opt/boardmesh/). [Standalone guide](
 
 Authoritative development: the Mesh monorepo. This repository receives generated snapshots. Open issues here; proposed changes must be integrated into Mesh by its maintainer before the next snapshot. Do not edit the generated shared crates independently.
 
-Source commit: `33a20894b9677f47a9603c41331ccc05c5b29183`. Full file hashes and exporter provenance: [mesh-export.json](mesh-export.json). No private monorepo history, active task records or session data are included.
+Source commit: `7d67453f89c442ae6ee78d31ef9751eddf3aa389`. Full file hashes and exporter provenance: [mesh-export.json](mesh-export.json). No private monorepo history, active task records or session data are included.
 
 MIT licensed Mesh code; third-party assets retain the notices in LICENSES.txt and their original licenses.
 
